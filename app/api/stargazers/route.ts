@@ -168,7 +168,7 @@ async function fetchFromGitHub(lastGood: Payload | null): Promise<Payload> {
 
   // 2) stargazers (login + avatar), earliest first.
   const sgRes = await fetch(
-    `https://api.github.com/repos/${REPO}/stargazers?per_page=40`,
+    `https://api.github.com/repos/${REPO}/stargazers?per_page=60`,
     {
       headers: ghHeaders("application/vnd.github.star+json"),
       next: { revalidate: 300 },

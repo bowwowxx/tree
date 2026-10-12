@@ -1,6 +1,6 @@
 # GitHub Star Tree
 
-A living 3D portfolio scene where a GitHub repository grows into a small treehouse village. The tracked repo's stars grow a village with a permanent owner house and houses for stargazers, up to 40 visible houses. The world reacts to live mountain weather from Gossensaß / Colle Isarco in South Tyrol.
+A living 3D portfolio scene where a GitHub repository grows into a small treehouse village. The tracked repo's stars grow a village with a permanent owner house and houses for stargazers, up to 60 visible houses. The world reacts to live mountain weather from Gossensaß / Colle Isarco in South Tyrol.
 
 Built as a polished real-time WebGL experience with Next.js, React Three Fiber, shader-driven weather, animated UI, and deterministic GitHub data mapping.
 
@@ -27,7 +27,7 @@ GitHub Star Tree turns repository activity into a calm, explorable 3D scene:
 - Profile panel with GitHub information and repository context.
 - Search and highlight flow for quickly finding a house.
 - Find my house: enter a GitHub username to focus its house. Missing residents
-  trigger a data recheck, with messages for unavailable data and the 40-house limit.
+  trigger a data recheck, with messages for unavailable data and the 60-house limit.
 
 ### Real-Time Weather
 
@@ -209,7 +209,7 @@ for missing houses, unavailable data, or a known resident outside the visible li
 GitHub data refreshes on page load and every five minutes while the page is
 visible. Lookup rechecks respect the same server cache, so starring the repository
 and immediately clicking the button may still require waiting a few minutes.
-The feature does not bypass the 40-house limit. If GitHub rejects access to the
+The feature does not bypass the 60-house limit. If GitHub rejects access to the
 star list, the site shows an authorization notice instead of silently implying
 that no one has starred the repository. The star count can remain visible even
 when account names cannot be fetched.

@@ -143,7 +143,7 @@ function platformGeometry(deckR: number): PlatformGeometry {
 }
 
 // Built as 3 merged meshes (one per material) instead of ~17 separate ones, so a
-// village of 40 houses costs ~120 platform draw calls, not ~680.
+// village of 60 houses costs ~120 platform draw calls, not ~680.
 function makePlatform(deckR: number): THREE.Group {
   const geo = platformGeometry(deckR);
   const g = new THREE.Group();
