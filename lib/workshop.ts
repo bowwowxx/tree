@@ -1,0 +1,40 @@
+export type WorkshopItemId = "ai-cat" | "stickbuddy" | "dgx-spark";
+export const WORKSHOP_ITEMS = [
+  {
+    id: "ai-cat" as const,
+    title: "AI 喵",
+    subtitle: "A little personality, a lot of possibilities.",
+    subtitleZh: "讓 AI 有表情，也有陪伴感。",
+    description: "A desktop AI companion with a voice, expressions, and an agent behind the scenes. Here she lives in a tiny cat-eared monitor, keeping the workshop company.",
+    descriptionZh: "住在桌面的 AI 夥伴，會說話、換表情，也能連上 Agent 使用工具。在這間工作室裡，她住在一台小小的貓耳螢幕中，陪主人一起創作。",
+    // Add the project's public URL here when it is published.
+    href: null,
+    color: "#dba7c4",
+    position: [-1.05, 1.58, -1.56] as [number, number, number],
+    camera: [-1.4, 2.3, 0.7] as [number, number, number],
+  },
+  {
+    id: "stickbuddy" as const,
+    title: "StickBuddy",
+    subtitle: "The smallest member of the team.",
+    subtitleZh: "小小一隻，替 AI 問你可不可以。",
+    description: "A pocket-sized electronic pet built with M5StickS3. Its pixel puppy keeps you company, then asks for your decision when an agent needs permission to act.",
+    descriptionZh: "用 M5StickS3 做的掌上電子寵物。平常是一隻陪在桌邊的像素小狗；當 Agent 要執行需要確認的操作，就會問主人可不可以。",
+    href: null,
+    color: "#e9b975",
+    position: [0, 1.58, -1.18] as [number, number, number],
+    camera: [0.15, 2.3, 0.9] as [number, number, number],
+  },
+  {
+    id: "dgx-spark" as const,
+    title: "DGX Spark",
+    subtitle: "Big ideas have a home base.",
+    subtitleZh: "把 AI 搬回家，讓點子有自己的基地。",
+    description: "The miniature on the right celebrates the local AI machine behind the projects. A little silver box for experimenting with models, building tools, and bringing ideas to life.",
+    descriptionZh: "桌上的銀色小主機，代表這些專案背後的地端 AI 基地。在自己的機器上研究模型、製作工具，再把點子變成可以分享的作品。",
+    href: "https://www.nvidia.com/en-us/products/workstations/dgx-spark/",
+    color: "#b7d395",
+    position: [1.13, 1.58, -1.52] as [number, number, number],
+    camera: [1.5, 2.2, 0.85] as [number, number, number],
+  },
+];

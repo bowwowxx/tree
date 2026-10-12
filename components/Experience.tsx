@@ -42,7 +42,7 @@ import { Flora } from "./Flora";
 import { Fireflies } from "./Fireflies";
 import { FallingLeaves } from "./FallingLeaves";
 import { Birds } from "./Birds";
-import { Dove } from "./Dove";
+import { WorkshopCat } from "./WorkshopCat";
 import { Weather } from "./Weather";
 import { SceneRig } from "./SceneRig";
 import { Sky } from "./Sky";
@@ -785,13 +785,12 @@ export default function Experience({
   focusedHouse = null,
   camMode = "orbit",
   stargazers = null,
-  doveRepo = "",
   graphicsQuality = "medium",
   uiOverlayOpen = false,
   suspended = false,
   showStats = false,
   onSelectHouse,
-  onFindDove,
+  onFindCat,
   onReady,
   onIntroChange,
 }: {
@@ -801,15 +800,14 @@ export default function Experience({
   focusedHouse?: number | null;
   camMode?: CamMode;
   stargazers?: Stargazer[] | null;
-  doveRepo?: string;
   graphicsQuality?: Quality;
   uiOverlayOpen?: boolean;
-  /** Stop the island's GPU work while the church fills the screen. */
+  /** Stop the island's GPU work while the workshop fills the screen. */
   suspended?: boolean;
   /** Collect the numbers for the FPS overlay. */
   showStats?: boolean;
   onSelectHouse?: (i: number) => void;
-  onFindDove?: () => void;
+  onFindCat?: () => void;
   onReady?: () => void;
   onIntroChange?: (introing: boolean) => void;
 }) {
@@ -1096,7 +1094,7 @@ export default function Experience({
             hazeColor={params.fogColor}
           />
           <group position={[0, TREE_Y, 0]} scale={TREE_BOOST}>
-            <Dove stars={stars} stargazers={stargazers} repo={doveRepo} interactive={!flying && !uiOverlayOpen} onFind={onFindDove} moving={performanceMoving} />
+            <WorkshopCat stars={stars} stargazers={stargazers} interactive={!flying && !uiOverlayOpen} onFind={onFindCat} />
             <Tree
               stars={stars}
               wind={params.wind}

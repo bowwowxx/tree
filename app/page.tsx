@@ -50,7 +50,7 @@ const Experience = dynamic(() => import("@/components/Experience"), {
   ssr: false,
   loading: () => <div className="absolute inset-0 bg-[#0b1320]" />,
 });
-const MemorialSecret = dynamic(() => import("@/components/MemorialSecret"), { ssr: false });
+const SecretWorkshop = dynamic(() => import("@/components/SecretWorkshop"), { ssr: false });
 
 const STARGAZER_REFRESH_MS = 5 * 60 * 1000;
 const WEATHER_REFRESH_MS = 10 * 60 * 1000;
@@ -208,7 +208,7 @@ function Home() {
   const [stars, setStars] = useState(0);
   const [starsLive, setStarsLive] = useState(false);
   const [visitors, setVisitors] = useState<Stargazer[] | null>(null);
-  const { ownerLogin, doveRepo, repo } = useVillageConfig();
+  const { ownerLogin, repo } = useVillageConfig();
   const { count: houseCount, residents: stargazers } = useMemo(
     () => villageHouses(stars, visitors, ownerLogin),
     [stars, visitors, ownerLogin],
@@ -284,7 +284,7 @@ function Home() {
     return () => window.clearTimeout(id);
   }, []);
 
-  // One Escape order for the whole HUD, topmost layer first: memorial → menu →
+  // One Escape order for the whole HUD, topmost layer first: workshop → menu →
   // info → house panel → focus → open the menu. Fly/walk are excluded, there
   // Esc releases the pointer lock.
   useEffect(() => {
@@ -648,13 +648,12 @@ function Home() {
             focusedHouse={focusedHouse}
             camMode={camMode}
             stargazers={stargazers}
-            doveRepo={doveRepo}
             graphicsQuality={resolvedGraphicsQuality}
             uiOverlayOpen={overlayOpen}
             suspended={secretOpen}
             showStats={showFps}
             onSelectHouse={handleHouseClick}
-            onFindDove={() => setSecretOpen(true)}
+            onFindCat={() => setSecretOpen(true)}
             onReady={() => setSceneReady(true)}
             onIntroChange={handleIntroChange}
           />
@@ -679,7 +678,7 @@ function Home() {
         weatherReady={weatherReady}
       />
       {findHouseOpen && <FindMyHouse repo={repo} onFind={findMyHouse} onClose={closeFindHouse} />}
-      {secretOpen && <MemorialSecret onClose={() => setSecretOpen(false)} />}
+      {secretOpen && <SecretWorkshop onClose={() => setSecretOpen(false)} />}
       {showFps && sceneReady && <FpsCounter quality={resolvedGraphicsQuality} />}
 
       <div

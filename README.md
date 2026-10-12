@@ -66,22 +66,30 @@ Weather affects lighting, fog, volumetric clouds, grass, leaves, branch sway, pr
 - Stars and moon visibility are suppressed by daylight, cloud cover, fog, and rain.
 - A locally served moon albedo texture adds surface detail, with a procedural fallback if it cannot load.
 
-### Dove and Memorial Church
+### Owner’s Treehouse Easter Egg: Cat and Secret Workshop
 
-The small ivory dove is a hidden memorial, tucked into the rear of the village.
-Finding and clicking it opens the church of Boden as a full-screen scroll walk.
-Set `DOVE_REPO=owner/repository` to put the dove on that owner's house instead.
-If unset or the owner has no visible house, the original rear-platform selection
-is used. Use Orbit mode to click the dove, then scroll to explore the church.
-GSAP ScrollTrigger drives a camera path along the central aisle, with
-quiet typography and a link to the memorial page. Reduced-motion mode
-keeps the camera still. The scan, Draco decoder, and fonts are served locally;
-the island pauses while the church is open and the church renders on demand.
-Asset and font licenses are included with the project.
+![The secret workshop, with AI 喵, StickBuddy, DGX Spark, and the owner's cat](docs/screenshots/secret-workshop.png)
 
-The existing memorial text and link commemorate Franz Plattner. Changing
-`DOVE_REPO` only changes which house hosts the dove; it does not replace the
-church scene, memorial text, or destination link.
+A small cream cat lives beside the permanent owner's treehouse. Click the cat
+or its **Follow the cat** button in Orbit mode to enter a warm wooden studio.
+On the desk, three handmade miniatures introduce the owner's projects:
+
+- **AI 喵**: a cat-eared monitor for the desktop AI companion.
+- **StickBuddy**: an orange handheld device with a pixel puppy on its screen.
+- **DGX Spark**: a miniature silver local AI workstation.
+
+Click an object or use the navigation buttons to move closer and read its
+story. DGX Spark links to its official page; add public project URLs for AI 喵
+and StickBuddy in `lib/workshop.ts` when they are ready to share. The room has
+a bookshelf, a night-sky window, a
+warm desk lamp, and the cat waiting beside the rug. All new room and cat models
+are built from lightweight geometry; no additional model download is needed.
+
+The island pauses while the workshop is open, and the workshop renders on
+demand. Reduced-motion mode skips camera transitions. The dialog supports
+keyboard navigation, touch controls, Escape to close, and a return button.
+The entrance always belongs to the owner house; no separate location setting
+is needed.
 
 ### Performance-Focused 3D
 
@@ -123,9 +131,10 @@ components/
   FindMyHouse.tsx             Account lookup dialog
   SearchBar.tsx               House search and Find my house entry
   VillageConfig.tsx           Public scene configuration
-  Dove.tsx                    Configurable dove placement
-  MemorialSecret.tsx          Memorial text and scroll journey
-  MemorialChurch.tsx          Boden church scan
+  WorkshopCat.tsx             Cat on the permanent owner platform
+  WorkshopCatModel.tsx        Shared handmade cat geometry
+  SecretWorkshop.tsx          Accessible workshop dialog and project stories
+  WorkshopScene.tsx           Room, desk miniatures and camera transitions
   NightSky.tsx                Stars and procedural moon
   Weather.tsx                 Rain, snow and storm particles
   SettingsMenu.tsx            Live/manual weather and quality controls
@@ -139,6 +148,7 @@ lib/
   village.ts                  Permanent owner and visitor house mapping
   findHouse.ts                Username validation and resident lookup
   ownerHouse.ts               Procedural owner cottage geometry
+  workshop.ts                 Desk objects, descriptions and project links
 
 docs/screenshots/             README screenshots and troubleshooting examples
 
@@ -168,7 +178,6 @@ For this project, configure the tracked repository and owner as follows:
 GITHUB_REPO=bowwowxx/tree
 GITHUB_USER=bowwowxx
 OWNER_HOUSE_STYLE=fisherman
-DOVE_REPO=bowwowxx/tree
 ```
 
 These are example settings, not the application's unset defaults. Restart the
@@ -183,7 +192,6 @@ Available variables:
 | `GITHUB_TOKEN` | Yes for account mapping | Server-side token authorized for the tracked repository, from an owner/admin or collaborator account; also raises API rate limits. |
 | `GITHUB_USER` | No | Permanent house owner. Defaults to the owner of `GITHUB_REPO`. |
 | `OWNER_HOUSE_STYLE` | No | Owner house model: `cottage` (default) or `fisherman`. |
-| `DOVE_REPO` | No | Place the dove on this repo owner's visible house; otherwise use the original placement. |
 | `DEMO_STARS` | No | Fallback star count if GitHub is unavailable. |
 | `NEXT_PUBLIC_DEV_CONTROLS` | No | Enables local star +/- controls for development. |
 
@@ -229,7 +237,7 @@ npx wrangler login
 ```
 
 Update the public settings in `wrangler.jsonc`: `GITHUB_REPO`, `GITHUB_USER`,
-`OWNER_HOUSE_STYLE`, `DOVE_REPO`, and `NEXT_PUBLIC_DEV_CONTROLS`. If you rename the
+`OWNER_HOUSE_STYLE`, and `NEXT_PUBLIC_DEV_CONTROLS`. If you rename the
 Worker, also update the service name in its `WORKER_SELF_REFERENCE` binding.
 
 ### Keep the token out of the build
@@ -315,19 +323,17 @@ Choose the owner's appearance with `OWNER_HOUSE_STYLE`:
 The owner's model choice is separate from GitHub rarity scoring. Visitor models
 remain Carrot Farm, Fisherman Market, Forge House and Barracks, according to their tier.
 
-### Find and click the dove
+### Follow the owner's cat
 
-With `DOVE_REPO=bowwowxx/tree`, the dove sits on the `bowwowxx` house's
-outer railing. Only the repository's owner portion selects the house; this
-setting does not change the repository whose stars populate the village.
+Use **Orbit** mode and look for the cream cat on the owner's platform. Click the
+cat or **Follow the cat** above it to open the secret workshop. The entrance is
+disabled in Fly and Walk modes and while another overlay is open.
 
-If `DOVE_REPO` is unset, invalid, or its owner has no visible house, the original
-placement is used: a rear-facing platform near mid-trunk height when at least two
-houses are visible, otherwise a small rear branch.
-
-Use **Orbit** mode, rotate to the dove's side of the tree, zoom in and click it.
-Dove clicks are disabled in Fly and Walk modes. Scroll inside the church to move
-along the aisle. Press Escape or the top-right **Zurück zur Insel** button to return.
+Choose **AI 喵**, **StickBuddy**, or **DGX Spark** from the buttons, or click the
+miniature directly. Choose **The room** to return to the wide view. Press Escape
+or **Back to the tree** to return to the village with its camera position intact.
+Workshop copy is available in Traditional Chinese when the site's language is
+Chinese, with English used for other languages.
 
 ### Graphics and movement
 

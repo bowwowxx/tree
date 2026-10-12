@@ -150,7 +150,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
       </head>
       <body className="font-sans">
-        <VillageConfigProvider ownerLogin={ownerLogin()} doveRepo={process.env.DOVE_REPO?.trim() ?? ""} repo={process.env.GITHUB_REPO ?? "bowwowxx/tree"} ownerHouseStyle={process.env.OWNER_HOUSE_STYLE === "fisherman" ? "fisherman" : "cottage"}>
+        <VillageConfigProvider ownerLogin={ownerLogin()} repo={process.env.GITHUB_REPO ?? "bowwowxx/tree"} ownerHouseStyle={process.env.OWNER_HOUSE_STYLE === "fisherman" ? "fisherman" : "cottage"}>
           {children}
         </VillageConfigProvider>
         <script
