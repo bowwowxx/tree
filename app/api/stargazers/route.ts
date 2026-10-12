@@ -174,6 +174,14 @@ async function fetchFromGitHub(lastGood: Payload | null): Promise<Payload> {
       next: { revalidate: 300 },
     },
   );
+
+  console.log("[GitHub Debug]", {
+    tokenExists: Boolean(process.env.GITHUB_TOKEN),
+    repo: REPO,
+    status: sgRes.status,
+    rateLimitRemaining: sgRes.headers.get("x-ratelimit-remaining"),
+  });
+  
   if (rateLimited(sgRes)) throw new Error("rate-limited");
   console.log("[GitHub] token exists:", Boolean(process.env.GITHUB_TOKEN));
   console.log("[GitHub] stargazers HTTP status:", sgRes.status);
