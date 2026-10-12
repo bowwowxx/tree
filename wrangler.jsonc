@@ -2,6 +2,14 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"main": ".open-next/worker.js",
 	"name": "tree",
+	"workers_dev": true,
+	"vars": {
+		"GITHUB_REPO": "bowwowxx/tree",
+		"GITHUB_USER": "bowwowxx",
+		"OWNER_HOUSE_STYLE": "fisherman",
+		"DOVE_REPO": "bowwowxx/tree",
+		"NEXT_PUBLIC_DEV_CONTROLS": "false"
+	},
 	"compatibility_date": "2026-10-12",
 	"compatibility_flags": [
 		"nodejs_compat",

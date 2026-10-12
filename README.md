@@ -4,6 +4,21 @@ A living 3D portfolio scene where a GitHub repository grows into a small treehou
 
 Built as a polished real-time WebGL experience with Next.js, React Three Fiber, shader-driven weather, animated UI, and deterministic GitHub data mapping.
 
+[**Explore the village →**](https://tree.jummykimo.workers.dev)
+
+![GitHub Star Tree at night, with treehouse platforms, warm lanterns, and the Find my house search](docs/screenshots/night-village.png)
+
+*A digital home for your GitHub project: stars become neighbors in a living treehouse village.*
+
+## Your home in the tree
+
+The owner has a permanent home, even before the first star. Click a house to
+inspect its resident, or use **Find my house** to locate your own GitHub account.
+
+![Owner's Fisherman Market house with the bowwowxx resident information panel](docs/screenshots/owner-house.png)
+
+*Each house connects the 3D scene to a real GitHub account.*
+
 ## Overview
 
 GitHub Star Tree turns repository activity into a calm, explorable 3D scene:
@@ -86,7 +101,7 @@ church scene, memorial text, or destination link.
 | 3D | Three.js, React Three Fiber, Drei |
 | Animation | GSAP, React frame loops |
 | Data | GitHub REST API, Open-Meteo |
-| Deployment | Next.js server / Vercel; Cloudflare Workers requires additional setup |
+| Deployment | Cloudflare Workers via OpenNext and Wrangler; Next.js server / Vercel |
 
 ## Project Structure
 
@@ -122,6 +137,11 @@ lib/
   village.ts                  Permanent owner and visitor house mapping
   findHouse.ts                Username validation and resident lookup
   ownerHouse.ts               Procedural owner cottage geometry
+
+docs/screenshots/             README screenshots and troubleshooting examples
+
+open-next.config.ts          OpenNext Cloudflare adapter configuration
+wrangler.jsonc               Worker bindings and public environment variables
 ```
 
 ## Getting Started
@@ -192,6 +212,62 @@ npm run build
 npm run start
 ```
 
+## Deploy to Cloudflare Workers
+
+The repository includes an OpenNext configuration and a Wrangler configuration
+for the `tree` Worker. Use **Wrangler** to deploy; `cloudflared` is a separate
+tool for tunnels.
+
+Confirm your Cloudflare account before deploying:
+
+```bash
+npx wrangler whoami
+# If needed:
+npx wrangler login
+```
+
+Update the public settings in `wrangler.jsonc`: `GITHUB_REPO`, `GITHUB_USER`,
+`OWNER_HOUSE_STYLE`, `DOVE_REPO`, and `NEXT_PUBLIC_DEV_CONTROLS`. If you rename the
+Worker, also update the service name in its `WORKER_SELF_REFERENCE` binding.
+
+### Keep the token out of the build
+
+The installed OpenNext adapter compiles Next.js environment-file values into
+the Worker bundle. Before building, securely retain your local token and
+temporarily remove `GITHUB_TOKEN` from environment files read by the build.
+Ensure it is also absent from the build shell's exported environment. Keep the
+non-secret settings available for prerendered pages.
+
+Build the Worker, then check that the token value is absent from `.open-next`:
+
+```bash
+npx opennextjs-cloudflare build
+```
+
+Restore your local environment file after the build. Deploy the existing
+artifact, then enter the token at Wrangler's interactive prompt:
+
+```bash
+npx opennextjs-cloudflare deploy
+npx wrangler secret put GITHUB_TOKEN --name tree
+npx wrangler secret list --name tree
+```
+
+The secret list should show `GITHUB_TOKEN` with type `secret_text`. You can also
+find it under **Worker → Settings → Variables and Secrets**. Keep it as a
+**Secret**, rather than a plaintext variable. See the
+[Cloudflare Secrets documentation](https://developers.cloudflare.com/workers/configuration/secrets/).
+
+Repeat the token-free build procedure for subsequent deployments. The current
+`npm run deploy` script rebuilds before deploying, so running it with a token
+in `.env.local` can embed that token again. Existing Worker Secrets are preserved
+by deployments; recreate them if you delete and rebuild the Worker.
+
+This workflow deploys from your local checkout. Automatic deployment on GitHub
+push requires a separate Workers Builds or CI setup, with build and runtime
+environment variables configured for their respective stages. See
+[OpenNext environment variables](https://opennext.js.org/cloudflare/howtos/env-vars).
+
 ## Using the Village
 
 ### Find your house
@@ -259,6 +335,47 @@ resolution and cloud detail adjustments run automatically.
 
 Orbit mode supports rotating, zooming and panning. On desktop, Fly and Walk use
 WASD and mouse look; Escape releases pointer lock. Walk also supports Space to jump.
+
+## Troubleshooting
+
+These screenshots document earlier failures encountered during setup. They are
+diagnostic examples, rather than the current state of the live village.
+
+### GitHub access notice
+
+![GitHub access warning explaining that the server token needs authorization before houses can be matched to accounts](docs/screenshots/github-access-notice.png)
+
+The scene can render and the repository's star count can remain visible even
+when the stargazer list is unavailable. Check that `GITHUB_TOKEN` exists as a
+Worker Secret and is authorized for the repository in `GITHUB_REPO`. Inspect
+`/api/stargazers` for `stargazersAccessDenied` and `rateLimited` before assuming
+that missing houses mean nobody has starred the project.
+
+### Worker Error 1101
+
+![Earlier Cloudflare deployment dashboard beside a browser displaying Error 1101, Worker threw exception](docs/screenshots/worker-error-1101.png)
+
+Error 1101 indicates an exception while executing the Worker. A successful
+upload does not guarantee that requests succeed. Inspect the Worker logs to
+identify the exception; the screenshot alone does not establish its cause.
+
+For the default Worker name, stream logs with:
+
+```bash
+npx wrangler tail tree
+```
+
+Reproduce the request while tailing, then verify both the homepage and the
+GitHub API after fixing the issue:
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' https://tree.jummykimo.workers.dev
+curl -sS https://tree.jummykimo.workers.dev/api/stargazers
+```
+
+Expect HTTP `200` for the homepage and a JSON response from the API. Check the
+payload's `live`, `stargazers`, `rateLimited`, and `stargazersAccessDenied` fields,
+then confirm house selection and search in the browser.
 
 ## License
 
