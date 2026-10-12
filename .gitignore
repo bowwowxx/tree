@@ -64,3 +64,11 @@ _shot*.mjs
 
 # local image/asset backups (originals before edits)
 .backups/
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
