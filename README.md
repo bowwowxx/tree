@@ -146,7 +146,7 @@ For this project, configure the tracked repository and owner as follows:
 GITHUB_REPO=bowwowxx/tree
 GITHUB_USER=bowwowxx
 OWNER_HOUSE_STYLE=fisherman
-DOVE_REPO=bowwowxx/Stargazer_Tree
+DOVE_REPO=bowwowxx/tree
 ```
 
 These are example settings, not the application's unset defaults. Restart the
@@ -239,7 +239,7 @@ remain Carrot Farm, Fisherman Market, Forge House and Barracks, according to the
 
 ### Find and click the dove
 
-With `DOVE_REPO=bowwowxx/Stargazer_Tree`, the dove sits on the `bowwowxx` house's
+With `DOVE_REPO=bowwowxx/tree`, the dove sits on the `bowwowxx` house's
 outer railing. Only the repository's owner portion selects the house; this
 setting does not change the repository whose stars populate the village.
 
@@ -259,113 +259,6 @@ resolution and cloud detail adjustments run automatically.
 
 Orbit mode supports rotating, zooming and panning. On desktop, Fly and Walk use
 WASD and mouse look; Escape releases pointer lock. Walk also supports Space to jump.
-
-## Data Flow
-
-```text
-GitHub API
-  -> /api/stargazers
-  -> scored stargazer payload
-  -> permanent owner + deduplicated visitors
-  -> visible-house count drives tree, platforms and houses
-  -> original GitHub star count remains in the HUD
-
-Open-Meteo
-  -> /api/weather
-  -> normalized SceneParams
-  -> sky, fog, clouds, wind, particles, moon, stars
-```
-
-The browser receives render-ready data. Secrets remain server-side.
-
-## Weather Model
-
-The scene uses realistic mapping rather than fixed visual presets:
-
-- Cloud layers drive volumetric coverage and sun dimming.
-- Visibility and humidity affect fog density.
-- Wind direction is converted from meteorological "from" bearing into scene-space downwind motion.
-- Gusts add short turbulence to foliage, clouds and particles.
-- Moon phase is computed from the selected/live date using a synodic month cycle.
-- Stars and moon fade out under daylight, heavy cloud, fog or rain.
-
-Manual mode uses the same data shape as live mode, so testing a night, storm or snow scene exercises the real rendering path.
-
-## Assets
-
-Runtime models live in:
-
-```text
-public/models/
-```
-
-Credits and licenses are tracked in:
-
-```text
-CREDITS.md
-```
-
-When adding or replacing GLB assets, keep files optimized and register them consistently with the existing model pipeline.
-
-## Deployment
-
-The current app uses server-side routes for GitHub stars, profiles, weather and
-credits. Deploy it with a Next.js server runtime rather than uploading only static files.
-
-### Vercel or a Node.js server
-
-Vercel supports Next.js API routes through its functions. Set the environment
-variables listed above in the deployment settings, including `GITHUB_TOKEN` as
-a server-side secret when needed. `.env.local` is for local development and is
-not a substitute for hosted environment configuration.
-
-For a Node.js server, install dependencies, run `npm run build`, then
-`npm run start`. GitHub and weather caching are handled by the existing routes.
-
-Reference: [Next.js on Vercel](https://vercel.com/docs/frameworks/full-stack/nextjs).
-
-### Cloudflare Workers
-
-Cloudflare Workers can host a full-stack Next.js application. This repository
-currently has no Cloudflare adapter, Wrangler configuration or deployment script;
-Workers deployment still needs to be implemented and tested.
-
-Preparation includes selecting a compatible Next.js adapter/build path,
-configuring environment variables and secrets, checking the temporary-file cache
-in `app/api/stargazers/route.ts` against the Workers runtime, and verifying that
-3D assets fit the hosting limits. If the cache needs durable storage, choose a
-Workers-compatible storage backend rather than relying on a local temporary file.
-
-References: [Cloudflare Next.js guidance](https://developers.cloudflare.com/pages/framework-guides/nextjs/)
-and [OpenNext adapter](https://developers.cloudflare.com/workers/framework-guides/web-apps/opennext/).
-
-### GitHub Pages
-
-GitHub Pages hosts static HTML, CSS and JavaScript. The current dynamic API routes
-cannot run there directly. A Pages version would need a static export plus an
-external backend, or redesigned client-side data fetching and profile features.
-
-Reference: [What is GitHub Pages?](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).
-
-## Performance Notes
-
-The scene targets a smooth laptop experience:
-
-- Adaptive resolution scaling.
-- Lower volumetric cloud cost while moving.
-- Quality presets for grass density and cloud detail.
-- Single draw-call star field.
-- Locally served moon texture with a procedural shader fallback.
-- Controlled particle counts for rain, snow and ambient effects.
-
-## Current Limitations
-
-- The tree uses a stylized procedural trunk, branches and canopy; growth follows the visible-house layout.
-- GitHub contributor enrichment is intentionally capped to protect API rate limits.
-- The village has 40 house slots, including the permanent owner house. The API fetches only the first 40 stargazers; not every later stargazer will have a visible house.
-- Star updates are cached and polled, so a newly added star is not guaranteed to appear immediately.
-- Cloudflare deployment and a GitHub Pages static version are not configured.
-- The existing `npm run lint` script uses the legacy `next lint` command and should be migrated if linting is required on Next.js 16.
 
 ## License
 
