@@ -4,7 +4,9 @@ A living 3D portfolio scene where a GitHub repository grows into a small treehou
 
 Built as a polished real-time WebGL experience with Next.js, React Three Fiber, shader-driven weather, animated UI, and deterministic GitHub data mapping.
 
-[**Explore the village →**](https://tree.jummykimo.workers.dev)
+> 🌲 **[Live Demo → tree.jummykimo.workers.dev](https://tree.jummykimo.workers.dev)**
+>
+> A living 3D GitHub star tree — open the link, walk the village, find your house.
 
 ![GitHub Star Tree at night, with treehouse platforms, warm lanterns, and the Find my house search](docs/screenshots/night-village.png)
 
