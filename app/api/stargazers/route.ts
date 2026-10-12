@@ -35,6 +35,7 @@ type Payload = {
   // True only when the MOST RECENT GitHub fetch attempt hit the rate limit —
   // distinct from "no data yet" (false) so the client can tell those apart.
   rateLimited: boolean;
+  stargazersAccessDenied?: boolean;
 };
 
 // Module-level state survives across requests within a server instance.
@@ -59,13 +60,13 @@ const state: {
 // Persistent layer: the payload is also written to disk so the cache SURVIVES
 // server restarts, dev hot-reloads (which reset module state!) and serverless
 // cold starts — a fresh process serves from disk instead of hitting GitHub.
-const CACHE_FILE = path.join(os.tmpdir(), "star-tree-stargazers-cache.json");
+const CACHE_FILE = path.join(os.tmpdir(), `star-tree-stargazers-${REPO.replace(/[^a-z\d_-]/gi, "_")}-cache.json`);
 
 async function readDiskCache(): Promise<Payload | null> {
   try {
     const raw = await fs.readFile(CACHE_FILE, "utf8");
     const p = JSON.parse(raw) as Payload;
-    if (typeof p?.fetchedAt !== "number" || typeof p?.stars !== "number") return null;
+    if (p?.repo !== REPO || typeof p?.fetchedAt !== "number" || typeof p?.stars !== "number") return null;
     return { ...p, rateLimited: Boolean(p.rateLimited) };
   } catch {
     return null;
@@ -174,6 +175,7 @@ async function fetchFromGitHub(lastGood: Payload | null): Promise<Payload> {
     },
   );
   if (rateLimited(sgRes)) throw new Error("rate-limited");
+  const stargazersAccessDenied = sgRes.status === 401 || sgRes.status === 403;
   let stargazers: Stargazer[] | null = null;
   if (sgRes.ok) {
     const arr = await sgRes.json();
@@ -217,7 +219,7 @@ async function fetchFromGitHub(lastGood: Payload | null): Promise<Payload> {
   // Unauthenticated: stop here. Contributors are still boosted; non-contributor
   // tiers fall back to the deterministic client seed.
   if (!authed) {
-    return { repo: REPO, stars, live: true, stargazers, fetchedAt: Date.now(), rateLimited: false };
+    return { repo: REPO, stars, live: true, stargazers, fetchedAt: Date.now(), rateLimited: false, stargazersAccessDenied };
   }
 
   // 4) enrich each stargazer with their profile → compute the REAL tier.
@@ -264,7 +266,7 @@ async function fetchFromGitHub(lastGood: Payload | null): Promise<Payload> {
     writeProfileDiskCache();
   }
 
-  return { repo: REPO, stars, live: true, stargazers, fetchedAt: Date.now(), rateLimited: false };
+  return { repo: REPO, stars, live: true, stargazers, fetchedAt: Date.now(), rateLimited: false, stargazersAccessDenied };
 }
 
 export async function GET(req: Request) {

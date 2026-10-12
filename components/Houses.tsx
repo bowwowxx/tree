@@ -6,7 +6,9 @@ import { Html, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import gsap from "gsap";
-import { TIER_BUILDING, TIER_COLOR, TIER_SIZE, Tier, deckRadius, resolveTier } from "@/lib/rarity";
+import { TIER_BUILDING, TIER_COLOR, TIER_SIZE, Tier, deckRadius, houseSize, resolveTier } from "@/lib/rarity";
+import { buildOwnerHouse } from "@/lib/ownerHouse";
+import { useVillageConfig } from "./VillageConfig";
 import { MAX_HOUSES } from "@/lib/layout";
 import { bonsaiAnchors, type BonsaiAnchor as Anchor } from "@/lib/bonsai";
 import {
@@ -233,6 +235,8 @@ function House({
   night,
   name,
   contributor = false,
+  owner = false,
+  size,
   makeBuilding,
   lanternScene,
   interactive,
@@ -247,6 +251,8 @@ function House({
   night: number;
   name: string;
   contributor?: boolean;
+  owner?: boolean;
+  size: number;
   makeBuilding: BuildFn;
   lanternScene: THREE.Object3D;
   interactive: boolean;
@@ -254,7 +260,8 @@ function House({
   setRef: (i: number, g: THREE.Group | null) => void;
 }) {
   const { t } = useI18n();
-  const size = TIER_SIZE[tier];
+  const { ownerHouseStyle } = useVillageConfig();
+  const customCottage = owner && ownerHouseStyle === "cottage";
   const [hovered, setHovered] = useState(false);
   const innerRef = useRef<THREE.Group>(null);
   // Houses that already exist mount at full size; only new ones grow in. This
@@ -265,15 +272,21 @@ function House({
 
   // Built once and reused — hover re-renders don't rebuild the meshes.
   const built = useMemo(() => {
-    const building = makeBuilding(tier);
+    const building = customCottage ? buildOwnerHouse() : makeBuilding(owner ? "uncommon" : tier);
+    if (building && owner && !customCottage) building.scale.multiplyScalar(size / TIER_SIZE.uncommon);
     const deckR = size * 1.5;
     const platform = makePlatform(deckR);
     // Collect the building's own (cloned) materials so we can brighten just this
     // house on hover — the shared platform wood is left untouched.
     const mats: THREE.MeshStandardMaterial[] = [];
+    const windows: THREE.MeshStandardMaterial[] = [];
     building?.traverse((o) => {
       if (o instanceof THREE.Mesh) {
         const m = o.material as THREE.MeshStandardMaterial;
+        if (m.name === "owner-window") {
+          windows.push(m);
+          return;
+        }
         if (m && "emissiveIntensity" in m) {
           m.emissive = new THREE.Color("#fff0d6");
           m.emissiveIntensity = 0;
@@ -283,9 +296,17 @@ function House({
     });
     const la = rand(i) * Math.PI * 2;
     const lr = deckR * (0.45 + 0.32 * rand(i + 5));
-    return { building, platform, deckR, mats, la, lr };
-  }, [tier, size, makeBuilding, i]);
-  useEffect(() => () => built.mats.forEach((m) => m.dispose()), [built]);
+    return { building, platform, deckR, mats, windows, la, lr };
+  }, [tier, size, makeBuilding, i, owner, customCottage]);
+  useEffect(() => () => {
+    [...built.mats, ...built.windows].forEach((m) => m.dispose());
+    if (customCottage) built.building?.traverse((object) => {
+      if (object instanceof THREE.Mesh) object.geometry.dispose();
+    });
+  }, [built, customCottage]);
+  useEffect(() => {
+    built.windows.forEach((material) => { material.emissiveIntensity = 0.15 + night * 1.65; });
+  }, [built, night]);
 
   // Pointer handlers go away with `interactive` (fly/walk), so pointer-out
   // never fires; drop the hover state and cursor ourselves.
@@ -588,6 +609,8 @@ export function Houses({
           i={i}
           anchor={a}
           tier={resolveTier(i, stargazers)}
+          owner={Boolean(stargazers?.[i]?.isOwner)}
+          size={houseSize(i, stargazers)}
           active={i < active}
           focused={focused === i}
           night={night}

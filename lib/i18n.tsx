@@ -117,6 +117,17 @@ export const LOCALE_DIR: Record<Locale, "ltr" | "rtl"> = {
 // English is the source dictionary — its keys define MsgKey for every other
 // language. `{name}` tokens are filled by t()'s second argument.
 const en = {
+  "findHouse.accessDenied": "GitHub denied access to the star list. The site owner needs to authorize the server token for this repository before new houses can be matched to accounts.",
+  "findHouse.title": "Find my house",
+  "findHouse.intro": "Enter your GitHub username to go straight to your house.",
+  "findHouse.account": "GitHub username",
+  "findHouse.checking": "Checking…",
+  "findHouse.go": "Take me home",
+  "findHouse.missing": "No matching house is visible yet. Star the repository, wait a few minutes, then try again. The village currently shows up to 40 houses.",
+  "findHouse.unavailable": "GitHub data is unavailable or out of date. Please try again later.",
+  "findHouse.full": "Your account is in the star list, but outside the 40 houses currently displayed.",
+  "findHouse.invalid": "Enter a GitHub username, such as bowwowxx, with an optional @.",
+  "findHouse.star": "Star the repository on GitHub",
   "hud.stars": "stars",
   "fly.enter": "Fly around",
   "fly.exit": "Exit fly mode",
@@ -230,6 +241,17 @@ const en = {
 export type MsgKey = keyof typeof en;
 
 const de: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub verweigert den Zugriff auf die Sterneliste. Der Website-Betreiber muss das Server-Token für dieses Repository autorisieren, um neue Häuser Konten zuzuordnen.",
+  "findHouse.title": "Mein Haus finden",
+  "findHouse.intro": "Gib deinen GitHub-Namen ein, um direkt zu deinem Haus zu gelangen.",
+  "findHouse.account": "GitHub-Benutzername",
+  "findHouse.checking": "Wird geprüft…",
+  "findHouse.go": "Nach Hause",
+  "findHouse.missing": "Noch kein passendes Haus sichtbar. Gib dem Repository einen Stern und versuche es nach ein paar Minuten erneut. Das Dorf zeigt bis zu 40 Häuser.",
+  "findHouse.unavailable": "GitHub-Daten sind nicht verfügbar oder veraltet. Versuche es später erneut.",
+  "findHouse.full": "Dein Konto steht auf der Sterneliste, aber außerhalb der 40 angezeigten Häuser.",
+  "findHouse.invalid": "Gib einen GitHub-Namen wie bowwowxx ein, optional mit @.",
+  "findHouse.star": "Repository auf GitHub einen Stern geben",
   "hud.stars": "Sterne",
   "fly.enter": "Umherfliegen",
   "fly.exit": "Flugmodus beenden",
@@ -341,6 +363,17 @@ const de: Record<MsgKey, string> = {
 };
 
 const it: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub ha negato l’accesso alla lista delle stelle. Il proprietario del sito deve autorizzare il token del server per questo repository per associare le nuove case agli account.",
+  "findHouse.title": "Trova la mia casa",
+  "findHouse.intro": "Inserisci il tuo nome GitHub per andare direttamente alla tua casa.",
+  "findHouse.account": "Nome utente GitHub",
+  "findHouse.checking": "Verifica…",
+  "findHouse.go": "Portami a casa",
+  "findHouse.missing": "Nessuna casa corrispondente visibile. Metti una stella al repository, attendi qualche minuto e riprova. Il villaggio mostra fino a 40 case.",
+  "findHouse.unavailable": "Dati GitHub non disponibili o non aggiornati. Riprova più tardi.",
+  "findHouse.full": "Il tuo account è nella lista delle stelle, ma non nelle 40 case visualizzate.",
+  "findHouse.invalid": "Inserisci un nome GitHub, come bowwowxx, anche con @.",
+  "findHouse.star": "Metti una stella al repository su GitHub",
   "hud.stars": "stelle",
   "fly.enter": "Vola in giro",
   "fly.exit": "Esci dal volo",
@@ -452,6 +485,17 @@ const it: Record<MsgKey, string> = {
 };
 
 const es: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub denegó el acceso a la lista de estrellas. El dueño del sitio debe autorizar el token del servidor para este repositorio para vincular las nuevas casas a las cuentas.",
+  "findHouse.title": "Encontrar mi casa",
+  "findHouse.intro": "Introduce tu usuario de GitHub para ir directamente a tu casa.",
+  "findHouse.account": "Usuario de GitHub",
+  "findHouse.checking": "Comprobando…",
+  "findHouse.go": "Llévame a casa",
+  "findHouse.missing": "Todavía no aparece tu casa. Dale una estrella al repositorio, espera unos minutos y vuelve a intentarlo. El pueblo muestra hasta 40 casas.",
+  "findHouse.unavailable": "Los datos de GitHub no están disponibles o actualizados. Inténtalo más tarde.",
+  "findHouse.full": "Tu cuenta aparece en la lista de estrellas, pero fuera de las 40 casas mostradas.",
+  "findHouse.invalid": "Introduce un usuario de GitHub, como bowwowxx, con @ opcional.",
+  "findHouse.star": "Dar una estrella al repositorio en GitHub",
   "hud.stars": "estrellas",
   "fly.enter": "Volar por ahí",
   "fly.exit": "Salir del vuelo",
@@ -563,6 +607,17 @@ const es: Record<MsgKey, string> = {
 };
 
 const fr: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub refuse l’accès à la liste des étoiles. Le propriétaire du site doit autoriser le jeton du serveur pour ce dépôt afin d’associer les nouvelles maisons aux comptes.",
+  "findHouse.title": "Trouver ma maison",
+  "findHouse.intro": "Saisis ton nom GitHub pour aller directement à ta maison.",
+  "findHouse.account": "Nom GitHub",
+  "findHouse.checking": "Vérification…",
+  "findHouse.go": "Rentrer chez moi",
+  "findHouse.missing": "Ta maison ne figure pas encore ici. Ajoute une étoile au dépôt, attends quelques minutes et réessaie. Le village affiche jusqu’à 40 maisons.",
+  "findHouse.unavailable": "Les données GitHub sont indisponibles ou anciennes. Réessaie plus tard.",
+  "findHouse.full": "Ton compte est dans la liste des étoiles, mais hors des 40 maisons affichées.",
+  "findHouse.invalid": "Saisis un nom GitHub comme bowwowxx, avec @ si tu veux.",
+  "findHouse.star": "Ajouter une étoile au dépôt sur GitHub",
   "hud.stars": "étoiles",
   "fly.enter": "Voler librement",
   "fly.exit": "Quitter le vol",
@@ -674,6 +729,17 @@ const fr: Record<MsgKey, string> = {
 };
 
 const pt: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "O GitHub negou acesso à lista de estrelas. O proprietário do site precisa autorizar o token do servidor para este repositório para vincular novas casas às contas.",
+  "findHouse.title": "Encontrar minha casa",
+  "findHouse.intro": "Digite seu nome de usuário do GitHub para ir direto à sua casa.",
+  "findHouse.account": "Usuário do GitHub",
+  "findHouse.checking": "Verificando…",
+  "findHouse.go": "Leve-me para casa",
+  "findHouse.missing": "Sua casa ainda não aparece. Dê uma estrela ao repositório, espere alguns minutos e tente novamente. A vila exibe até 40 casas.",
+  "findHouse.unavailable": "Os dados do GitHub estão indisponíveis ou desatualizados. Tente mais tarde.",
+  "findHouse.full": "Sua conta está na lista de estrelas, mas fora das 40 casas exibidas.",
+  "findHouse.invalid": "Digite um usuário do GitHub, como bowwowxx, com @ opcional.",
+  "findHouse.star": "Dar uma estrela ao repositório no GitHub",
   "hud.stars": "estrelas",
   "fly.enter": "Voar por aí",
   "fly.exit": "Sair do voo",
@@ -785,6 +851,17 @@ const pt: Record<MsgKey, string> = {
 };
 
 const nl: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub weigert toegang tot de sterrenlijst. De site-eigenaar moet het servertoken voor deze repository autoriseren om nieuwe huizen aan accounts te koppelen.",
+  "findHouse.title": "Vind mijn huis",
+  "findHouse.intro": "Voer je GitHub-naam in om direct naar je huis te gaan.",
+  "findHouse.account": "GitHub-gebruikersnaam",
+  "findHouse.checking": "Controleren…",
+  "findHouse.go": "Breng me naar huis",
+  "findHouse.missing": "Je huis is nog niet zichtbaar. Geef de repository een ster, wacht een paar minuten en probeer opnieuw. Het dorp toont maximaal 40 huizen.",
+  "findHouse.unavailable": "GitHub-gegevens zijn niet beschikbaar of verouderd. Probeer het later opnieuw.",
+  "findHouse.full": "Je account staat op de sterrenlijst, maar buiten de 40 getoonde huizen.",
+  "findHouse.invalid": "Voer een GitHub-naam zoals bowwowxx in, eventueel met @.",
+  "findHouse.star": "Geef de repository een ster op GitHub",
   "hud.stars": "sterren",
   "fly.enter": "Rondvliegen",
   "fly.exit": "Vliegmodus verlaten",
@@ -896,6 +973,17 @@ const nl: Record<MsgKey, string> = {
 };
 
 const pl: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub odmówił dostępu do listy gwiazdek. Właściciel strony musi autoryzować token serwera dla tego repozytorium, aby przypisać nowe domy do kont.",
+  "findHouse.title": "Znajdź mój dom",
+  "findHouse.intro": "Wpisz nazwę użytkownika GitHub, aby przejść prosto do swojego domu.",
+  "findHouse.account": "Nazwa użytkownika GitHub",
+  "findHouse.checking": "Sprawdzanie…",
+  "findHouse.go": "Zabierz mnie do domu",
+  "findHouse.missing": "Twój dom nie jest jeszcze widoczny. Dodaj gwiazdkę repozytorium, odczekaj kilka minut i spróbuj ponownie. Wioska pokazuje do 40 domów.",
+  "findHouse.unavailable": "Dane GitHub są niedostępne lub nieaktualne. Spróbuj później.",
+  "findHouse.full": "Twoje konto jest na liście gwiazdek, ale poza 40 wyświetlanymi domami.",
+  "findHouse.invalid": "Wpisz nazwę GitHub, np. bowwowxx, opcjonalnie z @.",
+  "findHouse.star": "Dodaj gwiazdkę repozytorium na GitHub",
   "hud.stars": "Gwiazdki",
   "fly.enter": "Lataj dookoła",
   "fly.exit": "Wyjdź z trybu lotu",
@@ -1007,6 +1095,17 @@ const pl: Record<MsgKey, string> = {
 };
 
 const ru: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub отказал в доступе к списку звёзд. Владелец сайта должен разрешить серверному токену доступ к репозиторию для связи новых домов с аккаунтами.",
+  "findHouse.title": "Найти мой дом",
+  "findHouse.intro": "Введите имя GitHub, чтобы перейти прямо к своему дому.",
+  "findHouse.account": "Имя пользователя GitHub",
+  "findHouse.checking": "Проверка…",
+  "findHouse.go": "Домой",
+  "findHouse.missing": "Ваш дом пока не виден. Поставьте звезду репозиторию, подождите несколько минут и повторите. Деревня показывает до 40 домов.",
+  "findHouse.unavailable": "Данные GitHub недоступны или устарели. Попробуйте позже.",
+  "findHouse.full": "Ваш аккаунт есть в списке звёзд, но за пределами 40 показанных домов.",
+  "findHouse.invalid": "Введите имя GitHub, например bowwowxx, можно с @.",
+  "findHouse.star": "Поставить звезду репозиторию на GitHub",
   "hud.stars": "звёзды",
   "fly.enter": "Полетать",
   "fly.exit": "Выйти из полёта",
@@ -1118,6 +1217,17 @@ const ru: Record<MsgKey, string> = {
 };
 
 const tr: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub yıldız listesine erişimi reddetti. Yeni evleri hesaplara eşlemek için site sahibi sunucu jetonunu bu depo için yetkilendirmelidir.",
+  "findHouse.title": "Evimi bul",
+  "findHouse.intro": "Doğrudan evine gitmek için GitHub kullanıcı adını gir.",
+  "findHouse.account": "GitHub kullanıcı adı",
+  "findHouse.checking": "Kontrol ediliyor…",
+  "findHouse.go": "Eve götür",
+  "findHouse.missing": "Evin henüz görünmüyor. Depoya yıldız ver, birkaç dakika bekle ve tekrar dene. Köy en fazla 40 ev gösterir.",
+  "findHouse.unavailable": "GitHub verileri kullanılamıyor veya güncel değil. Daha sonra tekrar dene.",
+  "findHouse.full": "Hesabın yıldız listesinde ama gösterilen 40 evin dışında.",
+  "findHouse.invalid": "bowwowxx gibi bir GitHub kullanıcı adı gir, @ kullanabilirsin.",
+  "findHouse.star": "GitHub üzerinde depoya yıldız ver",
   "hud.stars": "yıldız",
   "fly.enter": "Etrafta uç",
   "fly.exit": "Uçuştan çık",
@@ -1229,6 +1339,17 @@ const tr: Record<MsgKey, string> = {
 };
 
 const zh: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub 拒絕讀取按星名單。網站主人需要授權伺服器 token 存取這個倉庫，才能把新屋子對應到帳號。",
+  "findHouse.title": "找我的屋子",
+  "findHouse.intro": "輸入 GitHub 帳號，直接前往你的樹屋。",
+  "findHouse.account": "GitHub 帳號",
+  "findHouse.checking": "正在確認…",
+  "findHouse.go": "帶我回家",
+  "findHouse.missing": "目前還沒找到你的屋子。請先替倉庫按星，等幾分鐘後再試一次。目前村落最多顯示 40 間屋子。",
+  "findHouse.unavailable": "GitHub 資料暫時無法取得或尚未更新，請稍後再試。",
+  "findHouse.full": "你的帳號在按星名單中，但不在目前顯示的 40 間屋子內。",
+  "findHouse.invalid": "請輸入 GitHub 帳號，例如 bowwowxx，也可以加上 @。",
+  "findHouse.star": "到 GitHub 替倉庫按星",
   "hud.stars": "星标",
   "fly.enter": "自由飞行",
   "fly.exit": "退出飞行",
@@ -1338,6 +1459,17 @@ const zh: Record<MsgKey, string> = {
 };
 
 const ja: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub がスター一覧へのアクセスを拒否しました。新しい家をアカウントに対応付けるには、サイト管理者がサーバートークンにこのリポジトリへのアクセスを許可する必要があります。",
+  "findHouse.title": "自分の家を探す",
+  "findHouse.intro": "GitHub のユーザー名を入力して、自分の家へ移動します。",
+  "findHouse.account": "GitHub ユーザー名",
+  "findHouse.checking": "確認中…",
+  "findHouse.go": "家へ移動",
+  "findHouse.missing": "まだ家が見つかりません。リポジトリにスターを付け、数分待って再度お試しください。村には最大40軒が表示されます。",
+  "findHouse.unavailable": "GitHub のデータを取得できないか、古くなっています。後ほどお試しください。",
+  "findHouse.full": "スター一覧にアカウントはありますが、表示中の40軒には含まれていません。",
+  "findHouse.invalid": "bowwowxx などの GitHub ユーザー名を入力してください。@ 付きでも入力できます。",
+  "findHouse.star": "GitHub でリポジトリにスターを付ける",
   "hud.stars": "スター",
   "fly.enter": "自由に飛ぶ",
   "fly.exit": "飛行モードを終了",
@@ -1449,6 +1581,17 @@ const ja: Record<MsgKey, string> = {
 };
 
 const ko: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub에서 스타 목록 접근을 거부했습니다. 새 집을 계정에 연결하려면 사이트 소유자가 서버 토큰에 이 저장소 접근 권한을 부여해야 합니다.",
+  "findHouse.title": "내 집 찾기",
+  "findHouse.intro": "GitHub 사용자 이름을 입력하면 내 집으로 바로 이동합니다.",
+  "findHouse.account": "GitHub 사용자 이름",
+  "findHouse.checking": "확인 중…",
+  "findHouse.go": "집으로 이동",
+  "findHouse.missing": "아직 집을 찾지 못했습니다. 저장소에 스타를 누르고 몇 분 후 다시 시도하세요. 마을에는 최대 40채가 표시됩니다.",
+  "findHouse.unavailable": "GitHub 데이터를 가져올 수 없거나 오래되었습니다. 나중에 다시 시도하세요.",
+  "findHouse.full": "스타 목록에 계정이 있지만 현재 표시된 40채에는 포함되지 않습니다.",
+  "findHouse.invalid": "bowwowxx 같은 GitHub 사용자 이름을 입력하세요. @도 붙일 수 있습니다.",
+  "findHouse.star": "GitHub에서 저장소에 스타 누르기",
   "hud.stars": "스타",
   "fly.enter": "자유 비행",
   "fly.exit": "비행 종료",
@@ -1560,6 +1703,17 @@ const ko: Record<MsgKey, string> = {
 };
 
 const hi: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "GitHub ने स्टार सूची का एक्सेस अस्वीकार कर दिया। नए घरों को खातों से जोड़ने के लिए साइट मालिक को इस रिपॉज़िटरी के लिए सर्वर टोकन अधिकृत करना होगा।",
+  "findHouse.title": "मेरा घर खोजें",
+  "findHouse.intro": "अपने घर तक सीधे जाने के लिए GitHub उपयोगकर्ता नाम दर्ज करें।",
+  "findHouse.account": "GitHub उपयोगकर्ता नाम",
+  "findHouse.checking": "जाँच जारी…",
+  "findHouse.go": "घर ले चलें",
+  "findHouse.missing": "आपका घर अभी दिखाई नहीं दे रहा है। रिपॉज़िटरी को स्टार दें, कुछ मिनट प्रतीक्षा करें और फिर कोशिश करें। गाँव में अधिकतम 40 घर दिखते हैं।",
+  "findHouse.unavailable": "GitHub डेटा उपलब्ध नहीं है या पुराना है। बाद में कोशिश करें।",
+  "findHouse.full": "आपका खाता स्टार सूची में है, लेकिन दिखाए गए 40 घरों में नहीं है।",
+  "findHouse.invalid": "bowwowxx जैसा GitHub नाम दर्ज करें। @ वैकल्पिक है।",
+  "findHouse.star": "GitHub पर रिपॉज़िटरी को स्टार दें",
   "hud.stars": "स्टार",
   "fly.enter": "उड़ान भरें",
   "fly.exit": "उड़ान से बाहर",
@@ -1671,6 +1825,17 @@ const hi: Record<MsgKey, string> = {
 };
 
 const ar: Record<MsgKey, string> = {
+  "findHouse.accessDenied": "رفض GitHub الوصول إلى قائمة النجوم. يجب على مالك الموقع منح رمز الخادم صلاحية الوصول لهذا المستودع لربط البيوت الجديدة بالحسابات.",
+  "findHouse.title": "ابحث عن بيتي",
+  "findHouse.intro": "أدخل اسم مستخدم GitHub للانتقال مباشرة إلى بيتك.",
+  "findHouse.account": "اسم مستخدم GitHub",
+  "findHouse.checking": "جارٍ التحقق…",
+  "findHouse.go": "خذني إلى البيت",
+  "findHouse.missing": "لم يظهر بيتك بعد. أضف نجمة للمستودع وانتظر بضع دقائق ثم أعد المحاولة. تعرض القرية حتى 40 بيتًا.",
+  "findHouse.unavailable": "بيانات GitHub غير متاحة أو قديمة. حاول لاحقًا.",
+  "findHouse.full": "حسابك في قائمة النجوم لكنه خارج البيوت الأربعين المعروضة.",
+  "findHouse.invalid": "أدخل اسم GitHub مثل bowwowxx مع @ اختياريًا.",
+  "findHouse.star": "أضف نجمة للمستودع على GitHub",
   "hud.stars": "نجوم",
   "fly.enter": "التحليق",
   "fly.exit": "إنهاء التحليق",

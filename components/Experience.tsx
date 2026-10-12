@@ -51,7 +51,7 @@ import { CozyFlyControls } from "./CozyFlyControls";
 import { treeHeight } from "@/lib/growth";
 import { bonsaiAnchors, spineAt } from "@/lib/bonsai";
 import { MAX_HOUSES } from "@/lib/layout";
-import { deckRadius, TIER_SIZE, resolveTier } from "@/lib/rarity";
+import { deckRadius, houseSize } from "@/lib/rarity";
 import type { CloudLayerParams, SceneParams } from "@/lib/weather";
 import type { Stargazer } from "@/lib/stargazers";
 import { ISLAND_SCALE, TREE_BOOST, TREE_Y } from "@/lib/scene";
@@ -785,6 +785,7 @@ export default function Experience({
   focusedHouse = null,
   camMode = "orbit",
   stargazers = null,
+  doveRepo = "",
   graphicsQuality = "medium",
   uiOverlayOpen = false,
   suspended = false,
@@ -800,6 +801,7 @@ export default function Experience({
   focusedHouse?: number | null;
   camMode?: CamMode;
   stargazers?: Stargazer[] | null;
+  doveRepo?: string;
   graphicsQuality?: Quality;
   uiOverlayOpen?: boolean;
   /** Stop the island's GPU work while the church fills the screen. */
@@ -913,8 +915,7 @@ export default function Experience({
     const anchor = houseAnchors[focusedHouse];
     if (!anchor || focusedHouse >= active) return null;
 
-    const tier = resolveTier(focusedHouse, stargazers);
-    const size = TIER_SIZE[tier];
+    const size = houseSize(focusedHouse, stargazers);
     const deck = deckRadius(focusedHouse, stargazers) * TREE_BOOST;
     const target = new THREE.Vector3(
       anchor.pos.x * TREE_BOOST,
@@ -1095,7 +1096,7 @@ export default function Experience({
             hazeColor={params.fogColor}
           />
           <group position={[0, TREE_Y, 0]} scale={TREE_BOOST}>
-            <Dove stars={stars} stargazers={stargazers} interactive={!flying && !uiOverlayOpen} onFind={onFindDove} moving={performanceMoving} />
+            <Dove stars={stars} stargazers={stargazers} repo={doveRepo} interactive={!flying && !uiOverlayOpen} onFind={onFindDove} moving={performanceMoving} />
             <Tree
               stars={stars}
               wind={params.wind}

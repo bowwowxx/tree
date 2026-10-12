@@ -109,7 +109,7 @@ export default function HouseInterior({
   const { t } = useI18n();
   const tier = stargazer?.tier ?? tierForIndex(index);
   const fallbackLogin = stargazer?.login ?? nameForIndex(index);
-  const profileUrl = stargazer?.profileUrl ?? `https://github.com/${fallbackLogin}`;
+  const profileUrl = stargazer?.profileUrl ?? (stargazer?.login ? `https://github.com/${stargazer.login}` : undefined);
 
   const [user, setUser] = useState<GhUser | null>(null);
   const [state, setState] = useState<"loading" | "done" | "error" | "ratelimited">("loading");

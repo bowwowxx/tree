@@ -9,6 +9,7 @@ export type Stargazer = {
   contributor?: boolean; // contributed to the tracked repo
   commits?: number; // commits to the tracked repo
   followers?: number;
+  isOwner?: boolean;
 };
 
 /** Login for house i — real stargazer if known, else the placeholder name. */

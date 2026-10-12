@@ -14,7 +14,7 @@ import {
   LANTERN_SIZE,
   NIGHT_LIGHT,
 } from "@/lib/lantern";
-import { TIER_SIZE, resolveTier } from "@/lib/rarity";
+import { deckRadius as houseDeckRadius } from "@/lib/rarity";
 import type { Stargazer } from "@/lib/stargazers";
 
 const LANTERN = "/models/stylized_lantern.glb";
@@ -188,7 +188,7 @@ export function Bridges({
   // Deck radius per house — uses the SAME resolved tier as Houses so the bridge
   // ends land exactly on the deck rims.
   const deckRadius = useMemo(
-    () => (i: number) => TIER_SIZE[resolveTier(i, stargazers)] * 1.5,
+    () => (i: number) => houseDeckRadius(i, stargazers),
     [stargazers],
   );
 

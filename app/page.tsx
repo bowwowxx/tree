@@ -15,16 +15,21 @@ import { runGraphicsBenchmark } from "@/lib/benchmark";
 import { I18nProvider, useI18n, type Locale, type MsgKey } from "@/lib/i18n";
 import { useCoarsePointer } from "@/lib/useCoarsePointer";
 import SearchBar from "@/components/SearchBar";
+import FindMyHouse from "@/components/FindMyHouse";
+import { findResidentHouse, type HouseLookup } from "@/lib/findHouse";
 import HouseInterior from "@/components/HouseInterior";
 import HouseFocusUI from "@/components/HouseFocusUI";
 import GameHUD from "@/components/GameHUD";
 import FpsCounter from "@/components/FpsCounter";
 import RateLimitNotice from "@/components/RateLimitNotice";
+import HudNotice from "@/components/HudNotice";
 import SoftwareRenderingNotice from "@/components/SoftwareRenderingNotice";
 import LoadingOverlay from "@/components/LoadingOverlay";
 import { FlyIcon } from "@/components/Icons";
 import { cameraBus, DEFAULT_FOV, MAX_FOV, MIN_FOV, type CamMode } from "@/lib/cameraBus";
 import { nameForHouse, type Stargazer } from "@/lib/stargazers";
+import { villageHouses } from "@/lib/village";
+import { useVillageConfig } from "@/components/VillageConfig";
 import { resolveTier, TIER_RANK } from "@/lib/rarity";
 import { nowInZone } from "@/lib/astro";
 import { GOSSENSASS } from "@/lib/location";
@@ -202,7 +207,12 @@ function Home() {
   const coarse = useCoarsePointer();
   const [stars, setStars] = useState(0);
   const [starsLive, setStarsLive] = useState(false);
-  const [stargazers, setStargazers] = useState<Stargazer[] | null>(null);
+  const [visitors, setVisitors] = useState<Stargazer[] | null>(null);
+  const { ownerLogin, doveRepo, repo } = useVillageConfig();
+  const { count: houseCount, residents: stargazers } = useMemo(
+    () => villageHouses(stars, visitors, ownerLogin),
+    [stars, visitors, ownerLogin],
+  );
   // When the stargazer feed was last successfully pulled — surfaced quietly in
   // the settings panel so you can tell how fresh the village is.
   const [lastSync, setLastSync] = useState<number | null>(null);
@@ -210,6 +220,7 @@ function Home() {
   // Set only when the last stargazer fetch actually hit GitHub's rate limit
   // (not just "no data yet") — surfaced as a small dismissible HUD notice.
   const [rateLimited, setRateLimited] = useState(false);
+  const [starFeedAccessDenied, setStarFeedAccessDenied] = useState(false);
   const [starsReady, setStarsReady] = useState(false);
   const [weatherReady, setWeatherReady] = useState(false);
 
@@ -241,6 +252,8 @@ function Home() {
   const [infoOpen, setInfoOpen] = useState(false);
   const [selected, setSelected] = useState<number | null>(null);
   const [secretOpen, setSecretOpen] = useState(false);
+  const [findHouseOpen, setFindHouseOpen] = useState(false);
+  const lookupRequest = useRef(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [sceneReady, setSceneReady] = useState(false);
   // Let the loader draw first; mount WebGL only after live data is ready.
@@ -276,6 +289,7 @@ function Home() {
   // Esc releases the pointer lock.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
+      if (findHouseOpen) return; // Native dialog owns Escape and focus while open.
       if (event.key !== "Escape" || isTextInputTarget(event.target) || flying) return;
       event.preventDefault();
       if (secretOpen) {
@@ -303,32 +317,32 @@ function Home() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [flying, focusedHouse, infoOpen, menuOpen, secretOpen, selected]);
+  }, [flying, focusedHouse, infoOpen, menuOpen, secretOpen, selected, findHouseOpen]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== "i" || isTextInputTarget(event.target) || flying) return;
-      if (focusedHouse === null || selected !== null || secretOpen || menuOpen) return;
+      if (typeof event.key !== "string" || event.key.toLowerCase() !== "i" || isTextInputTarget(event.target) || flying) return;
+      if (focusedHouse === null || selected !== null || secretOpen || menuOpen || findHouseOpen) return;
       event.preventDefault();
       setInfoOpen((open) => !open);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [flying, focusedHouse, menuOpen, secretOpen, selected]);
+  }, [flying, focusedHouse, menuOpen, secretOpen, selected, findHouseOpen]);
 
   // "O" opens the in-app profile preview for the focused house (same action
   // as the Profil button) — a keyboard shortcut alongside "I" for info.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== "o" || isTextInputTarget(event.target) || flying) return;
-      if (focusedHouse === null || selected !== null || secretOpen || menuOpen) return;
+      if (typeof event.key !== "string" || event.key.toLowerCase() !== "o" || isTextInputTarget(event.target) || flying) return;
+      if (focusedHouse === null || selected !== null || secretOpen || menuOpen || findHouseOpen) return;
       event.preventDefault();
       setInfoOpen(false);
       setSelected(focusedHouse);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [flying, focusedHouse, menuOpen, secretOpen, selected]);
+  }, [flying, focusedHouse, menuOpen, secretOpen, selected, findHouseOpen]);
 
   useEffect(() => {
     const saved = readStorage(GRAPHICS_STORAGE_KEY);
@@ -414,6 +428,23 @@ function Home() {
   }, [resolvedGraphicsQuality]);
   const switchingQuality = hasLoadedOnce && !sceneReady;
 
+  const refreshStars = useCallback(async () => {
+    const response = await fetch("/api/stargazers", { cache: "no-store", signal: AbortSignal.timeout(15_000) });
+    if (!response.ok) throw new Error("Star feed unavailable");
+    const d = await response.json();
+    if (typeof d.stars !== "number" || !Number.isFinite(d.stars) || d.stars < 0) throw new Error("Invalid star feed");
+    const next: Stargazer[] | null = Array.isArray(d.stargazers) ? d.stargazers : null;
+    setStars(d.stars);
+    setStarsLive(Boolean(d.live));
+    setVisitors((prev) => (sameStargazers(prev, next) ? prev : next));
+    setLastSync(typeof d.fetchedAt === "number" ? d.fetchedAt : Date.now());
+    setNextSync(Date.now() + STARGAZER_REFRESH_MS);
+    setRateLimited(Boolean(d.rateLimited));
+    setStarFeedAccessDenied(Boolean(d.stargazersAccessDenied));
+    setStarsReady(true);
+    return { stars: d.stars as number, visitors: next, live: Boolean(d.live), rateLimited: Boolean(d.rateLimited), accessDenied: Boolean(d.stargazersAccessDenied) };
+  }, []);
+
   useEffect(() => {
     // Stargazers refresh every 5 minutes so new stars grow the tree live,
     // weather every 10. Hidden tabs skip their turn and catch up when shown.
@@ -421,22 +452,7 @@ function Home() {
     const lastLoad = { stars: 0, weather: 0 };
     const loadStars = () => {
       lastLoad.stars = Date.now();
-      return fetch("/api/stargazers", { cache: "no-store" })
-        .then((r) => r.json())
-        .then((d) => {
-          if (typeof d.stars === "number") setStars(d.stars);
-          setStarsLive(Boolean(d.live));
-          const next: Stargazer[] | null = Array.isArray(d.stargazers) ? d.stargazers : null;
-          setStargazers((prev) => (sameStargazers(prev, next) ? prev : next));
-          const syncedAt = typeof d.fetchedAt === "number" ? d.fetchedAt : Date.now();
-          setLastSync(syncedAt);
-          setNextSync(Date.now() + STARGAZER_REFRESH_MS);
-          setRateLimited(Boolean(d.rateLimited));
-          setStarsReady(true);
-        })
-        .catch(() => {
-          setStarsReady(true);
-        });
+      return refreshStars().catch(() => { setStarsReady(true); });
     };
 
     const loadWeather = () => {
@@ -473,7 +489,7 @@ function Home() {
       clearInterval(weatherId);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, []);
+  }, [refreshStars]);
 
   // The sun/moon follow the real clock: bump once a minute so live mode keeps
   // moving between the 10-minute weather refreshes.
@@ -523,7 +539,7 @@ function Home() {
 
   const searchResults = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const count = Math.max(0, Math.floor(stars));
+    const count = houseCount;
     const all = Array.from({ length: count }, (_, i) => {
       const gazer = stargazers?.[i] ?? null;
       return {
@@ -541,7 +557,7 @@ function Home() {
     return filtered.sort(
       (a, b) => TIER_RANK[b.tier] - TIER_RANK[a.tier] || a.index - b.index,
     );
-  }, [search, stargazers, stars]);
+  }, [search, stargazers, houseCount]);
 
   useEffect(() => {
     if (searchResults.length === 0) {
@@ -557,14 +573,14 @@ function Home() {
   }, [searchActive, searchResults]);
 
   useEffect(() => {
-    const activeCount = Math.max(0, Math.floor(stars));
+    const activeCount = houseCount;
     if (focusedHouse !== null && focusedHouse >= activeCount) {
       setFocusedHouse(null);
       setInfoOpen(false);
       setSearchActive(-1);
     }
     if (selected !== null && selected >= activeCount) setSelected(null);
-  }, [focusedHouse, selected, stars]);
+  }, [focusedHouse, selected, houseCount]);
 
   const handleHouseClick = (index: number) => {
     setSearchActive(index);
@@ -579,8 +595,43 @@ function Home() {
   };
 
   const highlight = focusedHouse ?? searchActive;
+  const closeFindHouse = () => {
+    lookupRequest.current += 1;
+    setFindHouseOpen(false);
+  };
+
+  const findMyHouse = async (login: string): Promise<HouseLookup | "found"> => {
+    const id = ++lookupRequest.current;
+    let residents = stargazers;
+    let count = houseCount;
+    let index = findResidentHouse(login, residents, count);
+    if (index < 0) {
+      const feed = await refreshStars();
+      const village = villageHouses(feed.stars, feed.visitors, ownerLogin);
+      residents = village.residents;
+      count = village.count;
+      index = findResidentHouse(login, residents, count);
+      if (id !== lookupRequest.current) return "missing";
+      if (index < 0) {
+        if (feed.accessDenied) return "accessDenied";
+        if (!feed.live || !feed.visitors || feed.rateLimited) return "unavailable";
+        const inFeed = feed.visitors.some((visitor) => visitor.login.toLowerCase() === login.toLowerCase());
+        return inFeed ? "full" : "missing";
+      }
+    }
+    if (id !== lookupRequest.current) return "missing";
+    setCamMode("orbit");
+    setSearch(residents[index].login);
+    setSearchActive(index);
+    setFocusedHouse(index);
+    setInfoOpen(false);
+    setSelected(null);
+    setMenuOpen(false);
+    return "found";
+  };
+
   const modeLabels = MODE_LABELS[locale];
-  const overlayOpen = menuOpen || selected !== null || secretOpen || infoOpen;
+  const overlayOpen = menuOpen || selected !== null || secretOpen || infoOpen || findHouseOpen;
 
   return (
     <main className="relative h-full w-full overflow-hidden">
@@ -591,12 +642,13 @@ function Home() {
       >
         {mountScene && (
           <Experience
-            stars={stars}
+            stars={houseCount}
             params={params}
             highlight={highlight}
             focusedHouse={focusedHouse}
             camMode={camMode}
             stargazers={stargazers}
+            doveRepo={doveRepo}
             graphicsQuality={resolvedGraphicsQuality}
             uiOverlayOpen={overlayOpen}
             suspended={secretOpen}
@@ -626,6 +678,7 @@ function Home() {
         starsReady={starsReady}
         weatherReady={weatherReady}
       />
+      {findHouseOpen && <FindMyHouse repo={repo} onFind={findMyHouse} onClose={closeFindHouse} />}
       {secretOpen && <MemorialSecret onClose={() => setSecretOpen(false)} />}
       {showFps && sceneReady && <FpsCounter quality={resolvedGraphicsQuality} />}
 
@@ -635,6 +688,14 @@ function Home() {
         }`}
       >
         <SearchBar
+          onFindMyHouse={() => {
+            if (document.pointerLockElement) document.exitPointerLock();
+            setCamMode("orbit");
+            setMenuOpen(false);
+            setInfoOpen(false);
+            setSelected(null);
+            setFindHouseOpen(true);
+          }}
           query={search}
           onQuery={setSearch}
           results={searchResults}
@@ -720,6 +781,7 @@ function Home() {
         <div className="pointer-events-none absolute left-[calc(1.25rem+env(safe-area-inset-left))] top-[calc(1.25rem+env(safe-area-inset-top))] z-30 flex flex-col items-start gap-2">
           <SoftwareRenderingNotice />
           <RateLimitNotice active={rateLimited} />
+          {starFeedAccessDenied && <HudNotice message={t("findHouse.accessDenied")} accent="#e6c485" onDismiss={() => setStarFeedAccessDenied(false)} />}
         </div>
 
         {selected !== null && (
@@ -729,7 +791,7 @@ function Home() {
             onClose={() => setSelected(null)}
           />
         )}
-        {focusedHouse !== null && selected === null && !secretOpen && !menuOpen && (
+        {focusedHouse !== null && selected === null && !secretOpen && !menuOpen && !findHouseOpen && (
           <HouseFocusUI
             index={focusedHouse}
             stargazer={stargazers?.[focusedHouse] ?? null}

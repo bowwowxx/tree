@@ -1,6 +1,6 @@
 # GitHub Star Tree
 
-A living 3D portfolio scene where a GitHub repository grows into a small treehouse village. The tracked repo's stars drive the tree, every stargazer becomes a house, and the world reacts to live mountain weather from Gossensaß / Colle Isarco in South Tyrol.
+A living 3D portfolio scene where a GitHub repository grows into a small treehouse village. The tracked repo's stars grow a village with a permanent owner house and houses for stargazers, up to 40 visible houses. The world reacts to live mountain weather from Gossensaß / Colle Isarco in South Tyrol.
 
 Built as a polished real-time WebGL experience with Next.js, React Three Fiber, shader-driven weather, animated UI, and deterministic GitHub data mapping.
 
@@ -10,6 +10,8 @@ GitHub Star Tree turns repository activity into a calm, explorable 3D scene:
 
 - Stars grow the tree and determine how dense the village becomes.
 - Stargazers are rendered as houses placed deterministically around the tree.
+- The repository owner always has a house, even with zero stars. An owner who
+  stars the repository keeps the same single house.
 - House rarity is based on GitHub profile clout plus contributor status.
 - The scene mirrors live weather from Gossensaß / Gemeinde Brenner.
 - Night mode adds stars and a procedural moon phase.
@@ -24,6 +26,8 @@ GitHub Star Tree turns repository activity into a calm, explorable 3D scene:
 - Per-stargazer rarity tiers using profile signals and contributor bonus.
 - Profile panel with GitHub information and repository context.
 - Search and highlight flow for quickly finding a house.
+- Find my house: enter a GitHub username to focus its house. Missing residents
+  trigger a data recheck, with messages for unavailable data and the 40-house limit.
 
 ### Real-Time Weather
 
@@ -43,17 +47,26 @@ Weather affects lighting, fog, volumetric clouds, grass, leaves, branch sway, pr
 - GPU-friendly star field with subtle color variation and twinkle.
 - Procedural moon with calculated phase, illumination, halo, and crater detail.
 - Stars and moon visibility are suppressed by daylight, cloud cover, fog, and rain.
-- No moon texture is required.
+- A locally served moon albedo texture adds surface detail, with a procedural fallback if it cannot load.
 
-### Performance-Focused 3D
+### Dove and Memorial Church
 
 The small ivory dove is a hidden memorial, tucked into the rear of the village.
 Finding and clicking it opens the church of Boden as a full-screen scroll walk.
+Set `DOVE_REPO=owner/repository` to put the dove on that owner's house instead.
+If unset or the owner has no visible house, the original rear-platform selection
+is used. Use Orbit mode to click the dove, then scroll to explore the church.
 GSAP ScrollTrigger drives a camera path along the central aisle, with
 quiet typography and a link to the memorial page. Reduced-motion mode
 keeps the camera still. The scan, Draco decoder, and fonts are served locally;
 the island pauses while the church is open and the church renders on demand.
 Asset and font licenses are included with the project.
+
+The existing memorial text and link commemorate Franz Plattner. Changing
+`DOVE_REPO` only changes which house hosts the dove; it does not replace the
+church scene, memorial text, or destination link.
+
+### Performance-Focused 3D
 
 - React Three Fiber and Drei scene composition.
 - Adaptive DPR and cloud quality based on frame budget.
@@ -61,6 +74,7 @@ Asset and font licenses are included with the project.
 - Instanced or batched effects where practical.
 - Reduced-quality path while camera/fly controls are moving.
 - Pointer-lock fly controls for smooth movement.
+- Graphics presets: Auto, Low, Medium, High, Extreme and Ultra, with an optional FPS display.
 
 ## Tech Stack
 
@@ -72,12 +86,13 @@ Asset and font licenses are included with the project.
 | 3D | Three.js, React Three Fiber, Drei |
 | Animation | GSAP, React frame loops |
 | Data | GitHub REST API, Open-Meteo |
-| Deployment target | Vercel |
+| Deployment | Next.js server / Vercel; Cloudflare Workers requires additional setup |
 
 ## Project Structure
 
 ```text
 app/
+  layout.tsx                  Server-side owner and village configuration
   page.tsx                    Main client experience shell
   api/
     stargazers/route.ts       GitHub star + stargazer data
@@ -87,7 +102,13 @@ app/
 components/
   Experience.tsx              Main R3F canvas scene
   Tree.tsx                    Tree, growth, foliage and wind response
-  Houses.tsx                  Stargazer houses and interactions
+  Houses.tsx                  Owner and stargazer houses and interactions
+  FindMyHouse.tsx             Account lookup dialog
+  SearchBar.tsx               House search and Find my house entry
+  VillageConfig.tsx           Public scene configuration
+  Dove.tsx                    Configurable dove placement
+  MemorialSecret.tsx          Memorial text and scroll journey
+  MemorialChurch.tsx          Boden church scan
   NightSky.tsx                Stars and procedural moon
   Weather.tsx                 Rain, snow and storm particles
   SettingsMenu.tsx            Live/manual weather and quality controls
@@ -97,7 +118,10 @@ lib/
   weather.ts                  Weather mapping, moon phase and scene params
   rarity.ts                   Rarity scoring
   stargazers.ts               Stargazer types and naming helpers
-  growth.ts                   Star count to tree growth mapping
+  growth.ts                   Visible-house count to tree growth mapping
+  village.ts                  Permanent owner and visitor house mapping
+  findHouse.ts                Username validation and resident lookup
+  ownerHouse.ts               Procedural owner cottage geometry
 ```
 
 ## Getting Started
@@ -116,12 +140,28 @@ Copy the example environment file:
 cp .env.local.example .env.local
 ```
 
-Recommended variables:
+For this project, configure the tracked repository and owner as follows:
+
+```dotenv
+GITHUB_REPO=bowwowxx/tree
+GITHUB_USER=bowwowxx
+OWNER_HOUSE_STYLE=fisherman
+DOVE_REPO=bowwowxx/Stargazer_Tree
+```
+
+These are example settings, not the application's unset defaults. Restart the
+local server after changing `.env.local`. On a hosted deployment, configure
+the same variables on the platform and rebuild/redeploy.
+
+Available variables:
 
 | Variable | Required | Description |
 | --- | --- | --- |
 | `GITHUB_REPO` | No | Repository to visualize. Defaults to `Plattnericus/ThreeJS_Portfolio`. |
-| `GITHUB_TOKEN` | No | Server-side GitHub token for higher rate limits. |
+| `GITHUB_TOKEN` | Yes for account mapping | Server-side token authorized for the tracked repository, from an owner/admin or collaborator account; also raises API rate limits. |
+| `GITHUB_USER` | No | Permanent house owner. Defaults to the owner of `GITHUB_REPO`. |
+| `OWNER_HOUSE_STYLE` | No | Owner house model: `cottage` (default) or `fisherman`. |
+| `DOVE_REPO` | No | Place the dove on this repo owner's visible house; otherwise use the original placement. |
 | `DEMO_STARS` | No | Fallback star count if GitHub is unavailable. |
 | `NEXT_PUBLIC_DEV_CONTROLS` | No | Enables local star +/- controls for development. |
 
@@ -137,11 +177,88 @@ Open:
 http://localhost:3000
 ```
 
+If port 3000 is already in use:
+
+```bash
+npm run dev -- --port 3001
+```
+
+Then open `http://localhost:3001`.
+
 ### 4. Build
 
 ```bash
 npm run build
+npm run start
 ```
+
+## Using the Village
+
+### Find your house
+
+1. Star the repository configured by `GITHUB_REPO` on GitHub.
+2. Open the village and click **Find my house** below the search box.
+3. Enter your GitHub username, for example `bowwowxx` or `@bowwowxx`.
+4. Click **Take me home** to focus the camera on your house.
+
+The lookup matches the full username without regard to letter case. It remembers
+the last entered username on that browser; no GitHub sign-in is required.
+If no visible house matches, it rechecks the star feed and displays a message
+for missing houses, unavailable data, or a known resident outside the visible limit.
+
+GitHub data refreshes on page load and every five minutes while the page is
+visible. Lookup rechecks respect the same server cache, so starring the repository
+and immediately clicking the button may still require waiting a few minutes.
+The feature does not bypass the 40-house limit. If GitHub rejects access to the
+star list, the site shows an authorization notice instead of silently implying
+that no one has starred the repository. The star count can remain visible even
+when account names cannot be fetched.
+Unmapped houses are labeled `Account pending #N`; these labels are not GitHub
+usernames and do not link to a fabricated GitHub profile.
+
+GitHub restricted stargazer-list access to repository admins and collaborators in
+2026. Authorize `GITHUB_TOKEN` for the repository selected by `GITHUB_REPO`.
+See [GitHub’s access restriction announcement](https://github.blog/changelog/2026-06-30-upcoming-access-restrictions-to-public-api-endpoints-and-ui-views/).
+
+### Permanent owner house
+
+The account configured by `GITHUB_USER` always occupies the first house slot,
+even with zero stars. If unset, the owner is taken from `GITHUB_REPO`. If that
+account also stars the repository, it retains one house rather than receiving a
+second one. The displayed GitHub star count is not increased by the owner house.
+
+Choose the owner's appearance with `OWNER_HOUSE_STYLE`:
+
+| Value | Appearance |
+| --- | --- |
+| `fisherman` | Fisherman Market from the existing village model pack, sized for the owner platform. |
+| `cottage` | Cream walls, green pitched roof, flower boxes, porch and warm window light at night. This is the unset default. |
+
+The owner's model choice is separate from GitHub rarity scoring. Visitor models
+remain Carrot Farm, Fisherman Market, Forge House and Barracks, according to their tier.
+
+### Find and click the dove
+
+With `DOVE_REPO=bowwowxx/Stargazer_Tree`, the dove sits on the `bowwowxx` house's
+outer railing. Only the repository's owner portion selects the house; this
+setting does not change the repository whose stars populate the village.
+
+If `DOVE_REPO` is unset, invalid, or its owner has no visible house, the original
+placement is used: a rear-facing platform near mid-trunk height when at least two
+houses are visible, otherwise a small rear branch.
+
+Use **Orbit** mode, rotate to the dove's side of the tree, zoom in and click it.
+Dove clicks are disabled in Fly and Walk modes. Scroll inside the church to move
+along the aisle. Press Escape or the top-right **Zurück zur Insel** button to return.
+
+### Graphics and movement
+
+Open Settings to select a graphics preset or enable the FPS display. Auto runs a
+local graphics benchmark; Low and Medium can reduce rendering cost. Adaptive
+resolution and cloud detail adjustments run automatically.
+
+Orbit mode supports rotating, zooming and panning. On desktop, Fly and Walk use
+WASD and mouse look; Escape releases pointer lock. Walk also supports Space to jump.
 
 ## Data Flow
 
@@ -149,7 +266,9 @@ npm run build
 GitHub API
   -> /api/stargazers
   -> scored stargazer payload
-  -> 3D tree, houses, HUD
+  -> permanent owner + deduplicated visitors
+  -> visible-house count drives tree, platforms and houses
+  -> original GitHub star count remains in the HUD
 
 Open-Meteo
   -> /api/weather
@@ -190,12 +309,43 @@ When adding or replacing GLB assets, keep files optimized and register them cons
 
 ## Deployment
 
-The app is designed for Vercel:
+The current app uses server-side routes for GitHub stars, profiles, weather and
+credits. Deploy it with a Next.js server runtime rather than uploading only static files.
 
-- Next.js App Router routes run server-side.
-- GitHub star data refreshes on page load and every five minutes while the app is open.
-- Open-Meteo weather data is cached by the weather route.
-- `GITHUB_TOKEN` should be configured as a Vercel environment variable for higher GitHub API limits.
+### Vercel or a Node.js server
+
+Vercel supports Next.js API routes through its functions. Set the environment
+variables listed above in the deployment settings, including `GITHUB_TOKEN` as
+a server-side secret when needed. `.env.local` is for local development and is
+not a substitute for hosted environment configuration.
+
+For a Node.js server, install dependencies, run `npm run build`, then
+`npm run start`. GitHub and weather caching are handled by the existing routes.
+
+Reference: [Next.js on Vercel](https://vercel.com/docs/frameworks/full-stack/nextjs).
+
+### Cloudflare Workers
+
+Cloudflare Workers can host a full-stack Next.js application. This repository
+currently has no Cloudflare adapter, Wrangler configuration or deployment script;
+Workers deployment still needs to be implemented and tested.
+
+Preparation includes selecting a compatible Next.js adapter/build path,
+configuring environment variables and secrets, checking the temporary-file cache
+in `app/api/stargazers/route.ts` against the Workers runtime, and verifying that
+3D assets fit the hosting limits. If the cache needs durable storage, choose a
+Workers-compatible storage backend rather than relying on a local temporary file.
+
+References: [Cloudflare Next.js guidance](https://developers.cloudflare.com/pages/framework-guides/nextjs/)
+and [OpenNext adapter](https://developers.cloudflare.com/workers/framework-guides/web-apps/opennext/).
+
+### GitHub Pages
+
+GitHub Pages hosts static HTML, CSS and JavaScript. The current dynamic API routes
+cannot run there directly. A Pages version would need a static export plus an
+external backend, or redesigned client-side data fetching and profile features.
+
+Reference: [What is GitHub Pages?](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages).
 
 ## Performance Notes
 
@@ -205,13 +355,16 @@ The scene targets a smooth laptop experience:
 - Lower volumetric cloud cost while moving.
 - Quality presets for grass density and cloud detail.
 - Single draw-call star field.
-- Procedural moon shader instead of texture downloads.
+- Locally served moon texture with a procedural shader fallback.
 - Controlled particle counts for rain, snow and ambient effects.
 
 ## Current Limitations
 
-- The main tree asset is stylized and static; true organic growth requires a morph-target or rigged GLB.
+- The tree uses a stylized procedural trunk, branches and canopy; growth follows the visible-house layout.
 - GitHub contributor enrichment is intentionally capped to protect API rate limits.
+- The village has 40 house slots, including the permanent owner house. The API fetches only the first 40 stargazers; not every later stargazer will have a visible house.
+- Star updates are cached and polled, so a newly added star is not guaranteed to appear immediately.
+- Cloudflare deployment and a GitHub Pages static version are not configured.
 - The existing `npm run lint` script uses the legacy `next lint` command and should be migrated if linting is required on Next.js 16.
 
 ## License

@@ -7,7 +7,7 @@ import { nameForIndex } from "@/lib/names";
 import {
   TIER_BUILDING,
   TIER_COLOR,
-  TIER_SIZE,
+  houseSize,
   deckRadius,
   rarityStats,
   resolveTier,
@@ -17,6 +17,7 @@ import { useI18n, type Locale, type MsgKey } from "@/lib/i18n";
 import { fetchGhUser } from "@/lib/ghUser";
 import { CloseIcon, StarIcon } from "./Icons";
 import { WOOD } from "./TrunkRings";
+import { useVillageConfig } from "./VillageConfig";
 
 function ExternalLinkIcon({ className }: { className?: string }) {
   return (
@@ -637,6 +638,7 @@ function numberOrDash(value: number | undefined, locale: string): string {
 
 function useHouseFacts(index: number, stargazer: Stargazer | null, stargazers: Stargazer[] | null) {
   const { locale, t } = useI18n();
+  const { ownerHouseStyle } = useVillageConfig();
   const copy = COPY[locale];
   const buildingLabels = BUILDING_LABEL[locale];
   return useMemo(() => {
@@ -666,18 +668,18 @@ function useHouseFacts(index: number, stargazer: Stargazer | null, stargazers: S
       tierLabel: t(("tier." + tier) as MsgKey),
       color: TIER_COLOR[tier],
       name,
-      profileUrl: stargazer?.profileUrl ?? `https://github.com/${name}`,
+      profileUrl: stargazer?.profileUrl ?? (stargazer?.login ? `https://github.com/${stargazer.login}` : undefined),
       contributor,
       commits,
       followers,
       rating,
       source,
-      size: TIER_SIZE[tier],
+      size: houseSize(index, stargazers),
       deck: deckRadius(index, stargazers),
-      building: buildingLabels[tier] ?? TIER_BUILDING[tier],
+      building: stargazer?.isOwner ? (ownerHouseStyle === "fisherman" ? buildingLabels.uncommon : "Owner Cottage") : buildingLabels[tier] ?? TIER_BUILDING[tier],
       locale,
     };
-  }, [buildingLabels, copy, index, locale, stargazer, stargazers, t]);
+  }, [buildingLabels, copy, index, locale, stargazer, stargazers, t, ownerHouseStyle]);
 }
 
 function FocusCard({

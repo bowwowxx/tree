@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { fetchOwner, ownerLogin } from "@/lib/owner";
 import { siteUrl } from "@/lib/site";
+import { VillageConfigProvider } from "@/components/VillageConfig";
 
 // One cozy, highly readable rounded face for the WHOLE site (self-hosted via
 // next/font/local — builds and rendering work without a Google Fonts request).
@@ -149,7 +150,9 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://avatars.githubusercontent.com" />
       </head>
       <body className="font-sans">
-        {children}
+        <VillageConfigProvider ownerLogin={ownerLogin()} doveRepo={process.env.DOVE_REPO?.trim() ?? ""} repo={process.env.GITHUB_REPO ?? "Plattnericus/ThreeJS_Portfolio"} ownerHouseStyle={process.env.OWNER_HOUSE_STYLE === "fisherman" ? "fisherman" : "cottage"}>
+          {children}
+        </VillageConfigProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: inlineJson(jsonLd) }}

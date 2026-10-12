@@ -8,25 +8,29 @@ import * as THREE from "three";
 import { bonsaiNodes, spineAt } from "@/lib/bonsai";
 import { MAX_HOUSES } from "@/lib/layout";
 import { trunkBaseRadius, trunkHeight } from "@/lib/growth";
-import { deckRadius, type Tier } from "@/lib/rarity";
+import { deckRadius } from "@/lib/rarity";
+import type { Stargazer } from "@/lib/stargazers";
+import { doveHouseIndex } from "@/lib/village";
 
 const BIRD = "/models/bird_orange.glb";
 const DOVE_SCALE = 0.42;
 
-// A small, folded-wing dove rests on an existing rear platform railing. There is
-// no marker or flying orbit: exploring the back of the tree reveals it.
+// A small dove rests on the configured repo owner's railing, or a rear platform
+// selected by position when no matching visible house is configured.
 export function Dove({
   stars = 0,
   interactive = true,
   onFind,
   moving = false,
   stargazers = null,
+  repo = "",
 }: {
   stars?: number;
   interactive?: boolean;
   onFind?: () => void;
   moving?: boolean;
-  stargazers?: { tier?: Tier }[] | null;
+  stargazers?: Stargazer[] | null;
+  repo?: string;
 }) {
   const { scene, animations } = useGLTF(BIRD);
   const wrapper = useRef<THREE.Group>(null);
@@ -39,7 +43,8 @@ export function Dove({
 
   const perch = useMemo(() => {
     const active = Math.min(MAX_HOUSES, Math.max(0, Math.floor(stars)));
-    if (active >= 2) {
+    const specified = doveHouseIndex(repo, stargazers, active);
+    if (active >= 2 || specified >= 0) {
       const nodes = bonsaiNodes(active);
       const middle = trunkHeight(active) * 0.52;
       const preferred = new THREE.Vector3(-Math.SQRT1_2, 0, -Math.SQRT1_2);
@@ -52,7 +57,7 @@ export function Dove({
           Math.abs(node.base.y - middle) / Math.max(1, middle)
         );
       };
-      const branch = nodes.reduce((best, node) =>
+      const branch = specified >= 0 ? nodes[specified] : nodes.reduce((best, node) =>
         score(node) < score(best) ? node : best,
       );
       const radial = new THREE.Vector3(
@@ -84,7 +89,7 @@ export function Dove({
     const tip = center.clone().addScaledVector(direction, radius * 0.85 + 0.42);
     tip.y += 0.13;
     return { center, radial, tip, angle };
-  }, [stars, stargazers]);
+  }, [stars, stargazers, repo]);
 
   const { object, mixer, materials } = useMemo(() => {
     const object = cloneSkeleton(scene);

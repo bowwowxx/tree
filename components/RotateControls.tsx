@@ -86,6 +86,7 @@ export default function RotateControls({ fly }: { fly: boolean }) {
       return;
     }
     const down = (e: KeyboardEvent) => {
+      if (typeof e.key !== "string") return;
       if (isTextInputTarget(e.target)) return;
       if (e.key === "Shift") {
         cameraBus.fast = true;
@@ -114,6 +115,7 @@ export default function RotateControls({ fly }: { fly: boolean }) {
       }
     };
     const up = (e: KeyboardEvent) => {
+      if (typeof e.key !== "string") return;
       if (e.key === "Shift") {
         cameraBus.fast = false;
         mark("shift", false);

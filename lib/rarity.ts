@@ -37,9 +37,15 @@ export const TIER_SIZE: Record<Tier, number> = {
 /** Deck radius for house i — what the bridges land on and leaves must avoid. */
 export function deckRadius(
   i: number,
-  stargazers?: { tier?: Tier }[] | null,
+  stargazers?: { tier?: Tier; isOwner?: boolean }[] | null,
 ): number {
-  return TIER_SIZE[resolveTier(i, stargazers)] * 1.5;
+  return houseSize(i, stargazers) * 1.5;
+}
+
+export const OWNER_HOUSE_SIZE = 1.65;
+
+export function houseSize(i: number, stargazers?: { tier?: Tier; isOwner?: boolean }[] | null): number {
+  return stargazers?.[i]?.isOwner ? OWNER_HOUSE_SIZE : TIER_SIZE[resolveTier(i, stargazers)];
 }
 
 // Deterministic pseudo-random in [0,1) from an integer seed.

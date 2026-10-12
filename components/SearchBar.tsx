@@ -19,6 +19,7 @@ export default function SearchBar({
   activeIndex,
   onActive,
   onSelect,
+  onFindMyHouse,
 }: {
   query: string;
   onQuery: (q: string) => void;
@@ -26,6 +27,7 @@ export default function SearchBar({
   activeIndex: number;
   onActive: (index: number) => void;
   onSelect: (result: SearchResult) => void;
+  onFindMyHouse: () => void;
 }) {
   const { t } = useI18n();
   const [focused, setFocused] = useState(false);
@@ -234,6 +236,11 @@ export default function SearchBar({
           </div>
         )}
       </div>
+      {!focused && (
+        <button type="button" onClick={onFindMyHouse} className="ml-auto mt-2 flex items-center gap-1.5 rounded-full border border-[#b9e78b]/20 bg-[#0d1410]/85 px-3 py-1.5 text-xs font-medium text-[#c9e6ac] shadow-lg transition hover:border-[#b9e78b]/50 hover:bg-[#172519] focus-visible:outline-2 focus-visible:outline-[#b9e78b]">
+          <SearchIcon className="h-3.5 w-3.5" />{t("findHouse.title")}
+        </button>
+      )}
     </div>
   );
 }
