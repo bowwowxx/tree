@@ -6,7 +6,7 @@ import type { Stargazer } from "@/lib/stargazers";
 import { maxTier, tierFromContributor, tierFromProfile } from "@/lib/rarity";
 import { guardApi } from "@/lib/apiGuard";
 
-const REPO = process.env.GITHUB_REPO ?? "Plattnericus/ThreeJS_Portfolio";
+const REPO = process.env.GITHUB_REPO ?? "bowwowxx/tree";
 const ENRICH = 40; // how many stargazers to enrich with a profile fetch
 
 // ---- STRICT rate-limit protection -------------------------------------------

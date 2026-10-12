@@ -17,7 +17,7 @@ export type Owner = {
 
 export function ownerLogin(): string {
   if (process.env.GITHUB_USER) return process.env.GITHUB_USER;
-  const repo = process.env.GITHUB_REPO ?? "Plattnericus/ThreeJS_Portfolio";
+  const repo = process.env.GITHUB_REPO ?? "bowwowxx/tree";
   return repo.split("/")[0];
 }
 
@@ -57,7 +57,7 @@ export async function fetchOwner(): Promise<Owner | null> {
 // The tracked repo's star count, for the social share card. Cached for an hour
 // and best-effort — the OG image renders fine without it.
 export async function fetchRepoStars(): Promise<number | null> {
-  const repo = process.env.GITHUB_REPO ?? "Plattnericus/ThreeJS_Portfolio";
+  const repo = process.env.GITHUB_REPO ?? "bowwowxx/tree";
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
     "User-Agent": "star-tree",

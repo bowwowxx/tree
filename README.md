@@ -157,7 +157,7 @@ Available variables:
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `GITHUB_REPO` | No | Repository to visualize. Defaults to `Plattnericus/ThreeJS_Portfolio`. |
+| `GITHUB_REPO` | No | Repository to visualize. Defaults to `bowwowxx/tree`. |
 | `GITHUB_TOKEN` | Yes for account mapping | Server-side token authorized for the tracked repository, from an owner/admin or collaborator account; also raises API rate limits. |
 | `GITHUB_USER` | No | Permanent house owner. Defaults to the owner of `GITHUB_REPO`. |
 | `OWNER_HOUSE_STYLE` | No | Owner house model: `cottage` (default) or `fisherman`. |
