@@ -175,6 +175,8 @@ async function fetchFromGitHub(lastGood: Payload | null): Promise<Payload> {
     },
   );
   if (rateLimited(sgRes)) throw new Error("rate-limited");
+  console.log("[GitHub] token exists:", Boolean(process.env.GITHUB_TOKEN));
+  console.log("[GitHub] stargazers HTTP status:", sgRes.status);
   const stargazersAccessDenied = sgRes.status === 401 || sgRes.status === 403;
   let stargazers: Stargazer[] | null = null;
   if (sgRes.ok) {
