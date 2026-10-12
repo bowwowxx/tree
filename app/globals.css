@@ -1,0 +1,250 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+:root {
+  --font-sans: var(--font-nunito), -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "SF Pro Text", "Inter", system-ui, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  /* dvh tracks the shrinking mobile browser chrome so the bottom HUD is never
+     cut off; 100% is the fallback for browsers without dvh. */
+  height: 100%;
+  height: 100dvh;
+  background: #0b1320;
+  color: #f4f7f5;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0;
+  overscroll-behavior: none;
+}
+
+main {
+  height: 100%;
+  height: 100dvh;
+}
+
+canvas {
+  touch-action: none;
+}
+
+/* Safe-area helpers for the HUD corners (notch / rounded display cutouts).
+   Composable with Tailwind spacing since they only add the inset. */
+.safe-t {
+  padding-top: env(safe-area-inset-top);
+}
+.safe-b {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.safe-l {
+  padding-left: env(safe-area-inset-left);
+}
+.safe-r {
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ---- motion ---- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes riseX {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Glide in horizontally from off the right edge — no teleport. */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(64px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.anim-fade {
+  animation: fadeIn 0.8s ease both;
+}
+.anim-rise {
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-rise-x {
+  animation: riseX 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.anim-slide-right {
+  animation: slideInRight 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.delay-1 {
+  animation-delay: 0.08s;
+}
+.delay-2 {
+  animation-delay: 0.16s;
+}
+.delay-3 {
+  animation-delay: 0.24s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade,
+  .anim-rise,
+  .anim-rise-x,
+  .anim-slide-right {
+    animation: none;
+  }
+}
+
+/* GitHub-style rendered README (profile <login>/<login> repo).
+   A focused dark subset of github-markdown-css so injected README HTML reads
+   like it does on github.com without pulling in a dependency. */
+.markdown-body {
+  color: #e6edf3;
+  font-size: 14px;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+.markdown-body a {
+  color: #4493f8;
+  text-decoration: none;
+}
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+.markdown-body img {
+  max-width: 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  margin: 1.2em 0 0.6em;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #f0f6fc;
+}
+.markdown-body h1 {
+  font-size: 1.7em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #21262d;
+}
+.markdown-body h2 {
+  font-size: 1.35em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #21262d;
+}
+.markdown-body h3 {
+  font-size: 1.1em;
+}
+.markdown-body p,
+.markdown-body ul,
+.markdown-body ol,
+.markdown-body blockquote,
+.markdown-body table {
+  margin: 0 0 1em;
+}
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 2em;
+}
+.markdown-body li {
+  margin: 0.25em 0;
+}
+.markdown-body hr {
+  height: 1px;
+  margin: 1.5em 0;
+  border: 0;
+  background: #21262d;
+}
+.markdown-body blockquote {
+  padding: 0 1em;
+  color: #9198a1;
+  border-left: 0.25em solid #3d444d;
+}
+.markdown-body code {
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  border-radius: 6px;
+  background: #6e768166;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+.markdown-body pre {
+  padding: 16px;
+  overflow: auto;
+  border-radius: 6px;
+  background: #161b22;
+  margin-bottom: 1em;
+}
+.markdown-body pre code {
+  padding: 0;
+  background: transparent;
+  font-size: 90%;
+}
+.markdown-body table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  border-collapse: collapse;
+}
+.markdown-body th,
+.markdown-body td {
+  padding: 6px 13px;
+  border: 1px solid #3d444d;
+}
+.markdown-body tr:nth-child(2n) {
+  background: #161b22;
+}
+.markdown-body [align="center"] {
+  text-align: center;
+}
+.markdown-body .anchor,
+.markdown-body .octicon-link {
+  display: none;
+}
+
+/* Range inputs are drawn with appearance: none (the track is an inline
+   gradient); without this the thumb falls back to the browser's blue. */
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 9999px;
+  background: #e0b25c;
+  border: 2px solid #241708;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: #e0b25c;
+  border: 2px solid #241708;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
